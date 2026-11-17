@@ -1,0 +1,451 @@
+[
+ {
+  "file_prefix": "CUSTOMER_DATA",
+  "target_table": "CUSTOMER_DATA",
+  "header": [
+   "NIC_ENCR_INT",
+   "PRODUCT",
+   "LOAN_AMOUNT",
+   "ACCT_OPN_DATE",
+   "INTEREST_RATE",
+   "TENURE",
+   "GENDER",
+   "EVER_HIT_NPL"
+  ],
+  "phase": 1,
+  "label": "Loans"
+ },
+ {
+  "file_prefix": "DF_BASE_GSM_CON_STATUS_DETAILS",
+  "target_table": "GSM_CON_STATUS",
+  "header": [
+   "NIC_ENCR_INT",
+   "GSM_CONNECTED_COUNT",
+   "GSM_PD_COUNT",
+   "GSM_TOT_COUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 1,
+  "label": "Mobile connections count"
+ },
+ {
+  "file_prefix": "DF_BASE_DTV_CON_STATUS_DETAILS",
+  "target_table": "DTV_CON_STATUS",
+  "header": [
+   "NIC_ENCR_INT",
+   "DTV_CONNECTED_COUNT",
+   "DTV_PD_COUNT",
+   "DTV_TOT_COUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 1,
+  "label": "TV connections count"
+ },
+ {
+  "file_prefix": "DF_BASE_DBN_CON_STATUS_DETAILS",
+  "target_table": "DBN_CON_STATUS",
+  "header": [
+   "NIC_ENCR_INT",
+   "DBN_CONNECTED_COUNT",
+   "DBN_PD_COUNT",
+   "DBN_TOT_COUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 1,
+  "label": "Broadband connections count"
+ },
+ {
+  "file_prefix": "DF_CON_BASIC_DETAILS_GSM",
+  "target_table": "GSM_CON_DETAILS",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_STATUS",
+   "ACCOUNT_TYPE",
+   "AON_DATE",
+   "CX_DISTRICT",
+   "DEVICE_CATEGORY",
+   "DEVICE_TYPE",
+   "DEVICE",
+   "MONTH_KEY"
+  ],
+  "phase": 1,
+  "label": "Mobile number details"
+ },
+ {
+  "file_prefix": "DF_CON_BASIC_DETAILS_DTV",
+  "target_table": "DTV_CON_DETAILS",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_STATUS",
+   "ACCOUNT_TYPE",
+   "AON_DATE",
+   "DEVICE_CATEGORY",
+   "CX_DISTRICT",
+   "MONTH_KEY"
+  ],
+  "phase": 1,
+  "label": "TV connection details"
+ },
+ {
+  "file_prefix": "DF_CON_BASIC_DETAILS_DBN",
+  "target_table": "DBN_CON_DETAILS",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_STATUS",
+   "ACCOUNT_TYPE",
+   "AON_DATE",
+   "CX_DISTRICT",
+   "MONTH_KEY"
+  ],
+  "phase": 1,
+  "label": "Broadband connection details"
+ },
+ {
+  "file_prefix": "DF_CREDIT_PROFILE_REVENUE_GSM",
+  "target_table": "GSM_REVENUE",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "REVENUE_WOT",
+   "REVENUE_WT",
+   "ACCOUNT_TYPE",
+   "MONTH_KEY"
+  ],
+  "phase": 1,
+  "label": "Mobile spend"
+ },
+ {
+  "file_prefix": "DF_CREDIT_PROFILE_REVENUE_DTV",
+  "target_table": "DTV_REVENUE",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "REVENUE_WOT",
+   "REVENUE_WT",
+   "ACCOUNT_TYPE",
+   "MONTH_KEY"
+  ],
+  "phase": 1,
+  "label": "TV spend"
+ },
+ {
+  "file_prefix": "DF_CREDIT_PROFILE_REVENUE_DBN",
+  "target_table": "DBN_REVENUE",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "REVENUE_WOT",
+   "REVENUE_WT",
+   "ACCOUNT_TYPE",
+   "MONTH_KEY"
+  ],
+  "phase": 1,
+  "label": "Broadband spend"
+ },
+ {
+  "file_prefix": "DF_PROFILE_APP_USAGE_GSM",
+  "target_table": "GSM_APP_USAGE",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "APPLICATION",
+   "USAGE_MB",
+   "MONTH_KEY"
+  ],
+  "phase": 1,
+  "label": "App usage"
+ },
+ {
+  "file_prefix": "DF_CP_FICO_SCORE",
+  "target_table": "FICO_SCORE",
+  "header": [
+   "NIC_ENCR_INT",
+   "FICO_SCORE",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "FICO score"
+ },
+ {
+  "file_prefix": "DF_CP_PD_OUTSTANDING",
+  "target_table": "PD_OUTSTANDING",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "OUTSTANDING",
+   "PD_DATE",
+   "CREDIT_LIMIT"
+  ],
+  "phase": 2,
+  "label": "Disconnected with outstanding"
+ },
+ {
+  "file_prefix": "DF_CP_LOYALTY",
+  "target_table": "LOYALTY",
+  "header": [
+   "NIC_ENCR_INT",
+   "CX_PRIORITY",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "Loyalty tier"
+ },
+ {
+  "file_prefix": "DF_CP_REFILL_GSM",
+  "target_table": "REFILL_GSM",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "TOT_REFILL_AMOUNT",
+   "REFILL_COUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "Mobile top-ups"
+ },
+ {
+  "file_prefix": "DF_CP_REFILL_DTV",
+  "target_table": "REFILL_DTV",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "TOT_REFILL_AMOUNT",
+   "REFILL_COUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "TV top-ups"
+ },
+ {
+  "file_prefix": "DF_CP_REFILL_DBN",
+  "target_table": "REFILL_DBN",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "TOT_REFILL_AMOUNT",
+   "REFILL_COUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "Broadband top-ups"
+ },
+ {
+  "file_prefix": "DF_CP_TD_COUNT_GSM",
+  "target_table": "TD_COUNT_GSM",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "TYPE",
+   "TD_COUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "Mobile temporary disconnections"
+ },
+ {
+  "file_prefix": "DF_CP_TD_COUNT_DBN",
+  "target_table": "TD_COUNT_DBN",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "TYPE",
+   "TD_COUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "Broadband temporary disconnections"
+ },
+ {
+  "file_prefix": "DF_CP_USAGE_GSM",
+  "target_table": "USAGE_GSM",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "DATA_USAGE_TOTAL_BYTES",
+   "PAYG_DATA_USAGE_BYTES",
+   "TOT_VOICE_ONNET_MOU",
+   "TOT_VOICE_OFFNET_MOU",
+   "VOICE_INTERNATIONAL_MOU",
+   "TOT_SMS_ONNET_COUNT",
+   "TOT_SMS_OFFNET_CNT",
+   "TOT_IDD_SMS_CNT",
+   "TOT_INT_CARD_CNT",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "Mobile data, calls and SMS"
+ },
+ {
+  "file_prefix": "DF_CP_ADDONS_GSM",
+  "target_table": "ADDONS_GSM",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "ADDON_COUNT",
+   "ADDON_AMOUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "Mobile add-on packs"
+ },
+ {
+  "file_prefix": "DF_CP_SERVICE_REQUEST",
+  "target_table": "SERVICE_REQUEST",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "TOTAL_SR_COUNT",
+   "CALL_SR_COUNT",
+   "CHATBOT_SR_COUNT",
+   "WALK_IN_SR_COUNT",
+   "COMPLAIN_COUNT",
+   "TYPE",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "Service requests"
+ },
+ {
+  "file_prefix": "DF_CP_MDA_VISITS",
+  "target_table": "MDA_VISITS",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "TYPE",
+   "MDA_VISITS_COUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 2,
+  "label": "MDA visits"
+ },
+ {
+  "file_prefix": "DF_CP_BILLS_PAYMENTS_GSM",
+  "target_table": "BILLS_PAYMENTS_GSM",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "TRAN_DATE",
+   "TRAN_AMOUNT",
+   "TRAN_TYPE"
+  ],
+  "phase": 3,
+  "label": "Mobile bills and payments"
+ },
+ {
+  "file_prefix": "DF_CP_BILLS_PAYMENTS_DTV",
+  "target_table": "BILLS_PAYMENTS_DTV",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "TRAN_DATE",
+   "TRAN_AMOUNT",
+   "TRAN_TYPE"
+  ],
+  "phase": 3,
+  "label": "TV bills and payments"
+ },
+ {
+  "file_prefix": "DF_CP_BILLS_PAYMENTS_DBN",
+  "target_table": "BILLS_PAYMENTS_DBN",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "TRAN_TYPE",
+   "TRAN_DATE",
+   "TRAN_AMOUNT"
+  ],
+  "phase": 3,
+  "label": "Broadband bills and payments"
+ },
+ {
+  "file_prefix": "DF_CP_DIGITAL_PAYMENTS_GSM",
+  "target_table": "DIGITAL_PAYMENTS_GSM",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "DIGITAL_PAYMENT_COUNT",
+   "DIGITAL_PAYMENT_AMOUNT",
+   "NON_DIGITAL_PAYMENT_COUNT",
+   "NON_DIGITAL_PAYMENT_AMOUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 3,
+  "label": "Mobile payment channels"
+ },
+ {
+  "file_prefix": "DF_CP_DIGITAL_PAYMENTS_DTV",
+  "target_table": "DIGITAL_PAYMENTS_DTV",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "DIGITAL_PAYMENT_COUNT",
+   "DIGITAL_PAYMENT_AMOUNT",
+   "NON_DIGITAL_PAYMENT_COUNT",
+   "NON_DIGITAL_PAYMENT_AMOUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 3,
+  "label": "TV payment channels"
+ },
+ {
+  "file_prefix": "DF_CP_DIGITAL_PAYMENTS_DBN",
+  "target_table": "DIGITAL_PAYMENTS_DBN",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "DIGITAL_PAYMENT_COUNT",
+   "DIGITAL_PAYMENT_AMOUNT",
+   "NON_DIGITAL_PAYMENT_COUNT",
+   "NON_DIGITAL_PAYMENT_AMOUNT",
+   "MONTH_KEY"
+  ],
+  "phase": 3,
+  "label": "Broadband payment channels"
+ },
+ {
+  "file_prefix": "DF_CP_REVENUE_ALL_GSM",
+  "target_table": "REVENUE_ALL_GSM",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "VOICE_REVENUE_WOT_LOCAL",
+   "VOICE_REVENUE_WT_LOCAL",
+   "VOICE_IDD_REVENUE_WOT",
+   "VOICE_IDD_REVENUE_WT",
+   "ROAMING_REVENUE_WOT",
+   "ROAMING_REVENUE_WT",
+   "DATA_PAYG_REVENUE_WOT",
+   "DATA_PAYG_REVENUE_WT",
+   "DATA_LOAN_REVENUE",
+   "MONTH_KEY"
+  ],
+  "phase": 3,
+  "label": "Mobile spend breakdown"
+ },
+ {
+  "file_prefix": "DF_CP_USAGE_DBN",
+  "target_table": "USAGE_DBN",
+  "header": [
+   "NIC_ENCR_INT",
+   "MSISDN_ENCR_INT",
+   "ACCOUNT_TYPE",
+   "TOT_USAGE_GB",
+   "MONTH_KEY"
+  ],
+  "phase": 3,
+  "label": "Broadband data usage"
+ }
+]
