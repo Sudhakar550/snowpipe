@@ -4,113 +4,373 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dialog Data Upload</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f4f6f9;--card:#fff;--ink:#17202b;--muted:#5d6878;--line:#d8dee6;--brand:#c8102e;--brand-ink:#fff;
-  --ok:#1e7b34;--ok-bg:#e6f4ea;--warn:#8a5a00;--warn-bg:#fff4e0;--bad:#a12622;--bad-bg:#fdecea;--bar:#2f5fb3;
+  --bg:#f5f6fa; --surface:#ffffff; --surface-2:#f9fafc; --ink:#141a26; --ink-2:#3b4556; --muted:#6b7587;
+  --line:#e4e7ee; --line-2:#eef0f5;
+  --accent:#4f46e5; --accent-2:#6366f1; --accent-soft:#eef0ff; --accent-ink:#ffffff;
+  --ok:#0f7a4a; --ok-soft:#e5f6ed; --warn:#9a5b00; --warn-soft:#fff3dc; --bad:#b4232a; --bad-soft:#fdecec;
+  --info:#1d5fd1; --info-soft:#e7f0ff;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 4px 16px rgba(16,24,40,.06);
+  --radius:14px;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root{
-  --bg:#10151c;--card:#18202b;--ink:#e7ecf2;--muted:#9aa6b5;--line:#2b3644;--brand:#ff5d70;--brand-ink:#10151c;
-  --ok:#78c878;--ok-bg:#16301c;--warn:#f0a83a;--warn-bg:#33260f;--bad:#ff8a80;--bad-bg:#3a1d1d;--bar:#7aa6ff;}}
+  --bg:#0d1117; --surface:#151b24; --surface-2:#1a212c; --ink:#e8edf4; --ink-2:#c3cbd8; --muted:#8b96a8;
+  --line:#262f3c; --line-2:#1f2732;
+  --accent:#8b8cff; --accent-2:#a5a6ff; --accent-soft:#23254a; --accent-ink:#0d1117;
+  --ok:#5fd39a; --ok-soft:#12301f; --warn:#f2b45a; --warn-soft:#33250c; --bad:#ff8f8f; --bad-soft:#3a1a1c;
+  --info:#7fb0ff; --info-soft:#152742;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
-header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-h1{margin:0;font-size:26px}
-.sub{color:var(--muted);margin:4px 0 0}
-.user{color:var(--muted);font-size:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:18px}
-h2{margin:0 0 10px;font-size:18px}
-.drop{display:block;border:2px dashed var(--line);border-radius:12px;padding:34px 16px;text-align:center;cursor:pointer;transition:.15s}
-.drop.hover{border-color:var(--bar);background:color-mix(in srgb,var(--bar) 8%,transparent)}
-.drop b{display:block;font-size:17px;margin-bottom:4px}
-.drop span{color:var(--muted);font-size:14px}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14.5px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+.mono{font-family:var(--mono);font-size:12.5px}
+.muted{color:var(--muted)}
+svg{flex:none}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px}
+.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#9333ea);display:grid;place-items:center;color:#fff;box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 35%,transparent)}
+.brand b{display:block;font-size:15.5px;letter-spacing:-.01em}
+.brand span{font-size:12.5px;color:var(--muted)}
+.spacer{flex:1}
+.live{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);padding:6px 11px;border:1px solid var(--line);border-radius:99px;background:var(--surface)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.me{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2)}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:12.5px;text-transform:uppercase}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1200px;margin:0 auto;padding:24px 20px 64px}
+.hero h1{margin:0;font-size:26px;letter-spacing:-.02em}
+.hero p{margin:6px 0 0;color:var(--muted);max-width:720px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center}
+.stat .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center}
+.stat .v{font-size:22px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15}
+.stat .l{font-size:12.5px;color:var(--muted)}
+.ic.a{background:var(--accent-soft);color:var(--accent)} .ic.g{background:var(--ok-soft);color:var(--ok)}
+.ic.b{background:var(--info-soft);color:var(--info)} .ic.r{background:var(--bad-soft);color:var(--bad)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line-2)}
+.card-h h2{margin:0;font-size:15.5px;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+.card-b{padding:18px 20px}
+.step-n{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:12px;display:grid;place-items:center;font-weight:700}
+
+/* ---------- drop zone ---------- */
+.drop{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;border:1.5px dashed color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:12px;padding:34px 18px;cursor:pointer;
+  background:radial-gradient(ellipse at top,color-mix(in srgb,var(--accent) 7%,transparent),transparent 70%);transition:.18s}
+.drop:hover,.drop.hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent);transform:translateY(-1px)}
+.drop .big{width:52px;height:52px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-bottom:4px}
+.drop b{font-size:16px}
+.drop b u{color:var(--accent);text-decoration:none}
+.drop span{font-size:13px;color:var(--muted)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.chip{font-size:11.5px;padding:3px 8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
 input[type=file]{display:none}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top}
-th{color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
-td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.fname{font-family:ui-monospace,Consolas,monospace;font-size:13px;word-break:break-all}
-.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
-.t-ok{background:var(--ok-bg);color:var(--ok)} .t-warn{background:var(--warn-bg);color:var(--warn)} .t-bad{background:var(--bad-bg);color:var(--bad)}
-.msg{color:var(--muted);font-size:13px;margin-top:3px}
-.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px;min-width:120px}
-.bar i{display:block;height:100%;width:0;background:var(--bar);transition:width .2s}
-.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
-button{font:inherit;border:0;border-radius:8px;padding:9px 16px;cursor:pointer}
-.primary{background:var(--brand);color:var(--brand-ink);font-weight:600}
-.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
-button:disabled{opacity:.45;cursor:not-allowed}
-.summary{color:var(--muted);font-size:14px}
-details summary{cursor:pointer;color:var(--muted)}
-.scroll{overflow-x:auto}
-.empty{color:var(--muted);padding:10px 0}
+[hidden]{display:none!important}
+
+/* ---------- file rows (queue + history) ---------- */
+.files{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.file{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface);transition:.15s}
+.file:hover{border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}
+.file-row{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center}
+.ficon{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.fname{font-weight:600;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fmeta{font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:1px}
+.fmeta .sep{opacity:.5}
+.right{display:flex;align-items:center;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.6}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-ok{background:var(--ok-soft);color:var(--ok)} .p-warn{background:var(--warn-soft);color:var(--warn)}
+.p-bad{background:var(--bad-soft);color:var(--bad)} .p-info{background:var(--info-soft);color:var(--info)}
+.p-mute{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.p-run::before{animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+.iconbtn{width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer}
+.iconbtn:hover{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+.progress{margin-top:10px;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:6px;border-radius:99px;background:var(--line-2);overflow:hidden}
+.track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent),#9333ea);transition:width .25s}
+.progress small{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:110px;text-align:right}
+.note{margin-top:10px;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:flex-start}
+
+/* problem box */
+.problem{margin-top:10px;border-radius:10px;background:var(--bad-soft);border:1px solid color-mix(in srgb,var(--bad) 22%,transparent);padding:10px 12px;font-size:13px}
+.problem.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 25%,transparent)}
+.problem-t{display:flex;align-items:flex-start;gap:8px;color:var(--bad);font-weight:600}
+.problem.warn .problem-t{color:var(--warn)}
+.problem-h{color:var(--ink-2);margin:3px 0 0 24px;font-weight:400}
+.problem details{margin:6px 0 0 24px}
+.problem summary{cursor:pointer;color:var(--muted);font-size:12.5px;user-select:none;list-style:none;display:inline-flex;gap:4px;align-items:center}
+.problem summary::-webkit-details-marker{display:none}
+.problem summary::before{content:"▸";transition:.15s;display:inline-block}
+.problem details[open] summary::before{transform:rotate(90deg)}
+.raw{margin-top:6px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;white-space:pre-wrap;word-break:break-word;max-height:180px;overflow:auto}
+.cols{display:grid;grid-template-columns:72px minmax(0,1fr);gap:6px 10px;margin:8px 0 0 24px;align-items:start}
+.cols .k{font-size:12px;color:var(--muted);padding-top:3px}
+.cols .v{display:flex;flex-wrap:wrap;gap:4px}
+.cc{font-family:var(--mono);font-size:11px;padding:2px 6px;border-radius:6px;background:var(--surface);border:1px solid var(--line);color:var(--ink-2)}
+.cc.miss{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 35%,transparent);color:var(--bad)}
+.cc.extra{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 35%,transparent);color:var(--warn)}
+
+/* actions */
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:600;font-size:13.5px;cursor:pointer;border:1px solid transparent;transition:.15s}
+.btn-primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 30%,transparent)}
+.btn-primary:hover:not(:disabled){background:var(--accent-2);transform:translateY(-1px)}
+.btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink-2)}
+.btn-ghost:hover:not(:disabled){background:var(--surface-2)}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.summary{font-size:13px;color:var(--muted);margin-left:auto}
+.empty{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 10px;color:var(--muted);font-size:13px;text-align:center}
+.empty svg{opacity:.5}
+
+/* ---------- side panel ---------- */
+.how{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+.how li{display:grid;grid-template-columns:30px 1fr;gap:10px;position:relative;padding-bottom:16px}
+.how li:not(:last-child)::after{content:"";position:absolute;left:14px;top:30px;bottom:2px;width:2px;background:var(--line)}
+.how .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12.5px;z-index:1}
+.how b{display:block;font-size:13.5px}
+.how span{font-size:12.5px;color:var(--muted)}
+.search{position:relative}
+.search input{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 12px 9px 34px;background:var(--surface-2);outline:none;font-size:13px}
+.search input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.known{margin-top:12px;max-height:440px;overflow:auto;display:flex;flex-direction:column;gap:14px;padding-right:2px}
+.phase-h{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+.kf{padding:8px 10px;border-radius:9px;border:1px solid var(--line-2);margin-bottom:6px;background:var(--surface-2)}
+.kf .mono{display:block;font-size:11.5px;color:var(--ink);word-break:break-all}
+.kf small{font-size:12px;color:var(--muted)}
+.kf small b{color:var(--ink-2);font-weight:500}
+
+/* ---------- history ---------- */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{border:0;background:transparent;padding:6px 11px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;gap:6px;align-items:center}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.seg .c{font-size:11px;padding:0 6px;border-radius:99px;background:var(--line-2);color:var(--muted);font-variant-numeric:tabular-nums}
+.seg button.on .c{background:var(--accent-soft);color:var(--accent)}
+.toolbar .search{width:240px}
+.hist-head,.hist-row{display:grid;grid-template-columns:minmax(0,2.4fr) 130px 160px 110px;gap:14px;align-items:center}
+.hist-head{padding:10px 20px;font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line-2);background:var(--surface-2)}
+.hist-item{padding:14px 20px;border-bottom:1px solid var(--line-2)}
+.hist-item:last-child{border-bottom:0}
+.hist-item:hover{background:var(--surface-2)}
+.hist-row .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.hist-row .num small{display:block;font-weight:400;color:var(--muted);font-size:11.5px}
+.file-cell{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:center;min-width:0}
+.stage-col{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+.stage-col small{font-size:11.5px;color:var(--muted)}
+.more{display:flex;justify-content:center;padding:12px}
+
+/* ---------- toast ---------- */
+.toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:50}
+.toast{background:var(--ink);color:var(--surface);padding:12px 16px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:13.5px;display:flex;gap:10px;align-items:center;max-width:380px;animation:in .25s ease}
+@keyframes in{from{transform:translateY(8px);opacity:0}}
+
+/* ---------- responsive ---------- */
+@media (max-width:1000px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){
+  .top-in{padding:10px 16px}.live{display:none}.me span{display:none}
+  .wrap{padding:18px 16px 50px}
+  .hist-head{display:none}
+  .hist-row{grid-template-columns:1fr 1fr;gap:10px}
+  .hist-row .file-cell{grid-column:1/-1}
+  .hist-row .num{text-align:left}
+  .toolbar .search{width:100%}
+  .card-h{flex-wrap:wrap}
+  .summary{margin-left:0;width:100%}
+  .file-row{grid-template-columns:36px minmax(0,1fr)}
+  .file-row .right{grid-column:2;justify-content:space-between}
+  .fname{white-space:normal;word-break:break-all}
+  .toolbar{width:100%;min-width:0}.seg{width:100%;min-width:0;overflow-x:auto}.seg button{white-space:nowrap;flex:1;justify-content:center}
+  .problem-h,.problem details{margin-left:0}
+  .cols{grid-template-columns:1fr;margin-left:0}.cols .k{padding-top:0}
+}
+@media (max-width:480px){.stats{grid-template-columns:1fr 1fr;gap:10px}.stat{padding:12px;gap:10px}.stat .ic{display:none}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>Dialog data upload</h1>
-      <p class="sub">Upload the data files here. Any size is fine. Each file is checked, then kept in the upload folder for processing.</p>
-    </div>
-    <div class="user" id="who"></div>
-  </header>
-
-  <div class="card">
-    <h2>1. Choose files</h2>
-    <label class="drop" id="drop">
-      <b>Drop files here or click to choose</b>
-      <span>.csv, .csv.gz or split parts (.csv_part1.gz). You can choose many files at once.</span>
-      <input type="file" id="picker" multiple accept=".csv,.gz">
-    </label>
-    <details style="margin-top:12px">
-      <summary>Which files are accepted?</summary>
-      <div class="scroll"><table id="known"><thead><tr><th>File name starts with</th><th>Contains</th><th>Table</th><th>Phase</th></tr></thead><tbody></tbody></table></div>
-    </details>
+<header class="top">
+  <div class="top-in">
+    <div class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg></div>
+    <div class="brand"><b>Dialog Data Upload</b><span>Credit scoring POC</span></div>
+    <div class="spacer"></div>
+    <div class="live" title="New files are sent to Snowflake automatically"><i class="dot"></i>Auto-load to Snowflake is on</div>
+    <div class="me"><div class="avatar" id="av">·</div><span id="who"></span></div>
   </div>
+</header>
 
-  <div class="card">
-    <h2>2. Check and upload</h2>
-    <div class="scroll">
-      <table id="queue"><thead><tr><th>File</th><th>Size</th><th>Goes to</th><th style="width:38%">Status</th><th></th></tr></thead><tbody></tbody></table>
-    </div>
-    <div class="empty" id="qempty">No files chosen yet.</div>
-    <div class="actions">
-      <button class="primary" id="go" disabled>Upload</button>
-      <button class="ghost" id="clear" disabled>Clear list</button>
-      <span class="summary" id="qsum"></span>
-    </div>
-  </div>
+<main class="wrap">
+  <section class="hero">
+    <h1>Upload data files</h1>
+    <p>Drop the files below. Each file is checked, saved, and loaded into Snowflake automatically within a few minutes. Any file size works.</p>
+  </section>
 
-  <div class="card">
-    <h2>Upload history</h2>
-    <div class="scroll"><table id="hist"><thead><tr><th>When</th><th>File</th><th>Table</th><th>Size</th><th>Upload</th><th>Snowflake</th><th>By</th></tr></thead><tbody></tbody></table></div>
-    <div class="empty" id="hempty">No uploads yet.</div>
-  </div>
-</div>
+  <section class="stats">
+    <div class="stat"><div class="ic a"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg></div><div><div class="v" id="s-files">–</div><div class="l">Files uploaded</div></div></div>
+    <div class="stat"><div class="ic g"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div class="v" id="s-loaded">–</div><div class="l">Loaded in Snowflake</div></div></div>
+    <div class="stat"><div class="ic b"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div><div><div class="v" id="s-rows">–</div><div class="l">Rows added</div></div></div>
+    <div class="stat"><div class="ic r"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/></svg></div><div><div class="v" id="s-bad">–</div><div class="l">Need attention</div></div></div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <div class="card-h"><h2><span class="step-n">1</span>Choose and upload files</h2><span class="muted" style="font-size:12.5px" id="qcount"></span></div>
+      <div class="card-b">
+        <label class="drop" id="drop">
+          <div class="big"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg></div>
+          <b>Drag files here or <u>browse</u></b>
+          <span>You can choose many files at once. There is no size limit.</span>
+          <div class="chips"><span class="chip">.csv</span><span class="chip">.csv.gz</span><span class="chip">.csv_part1.gz</span></div>
+          <input type="file" id="picker" multiple accept=".csv,.gz">
+        </label>
+
+        <div class="files" id="queue"></div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="go" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+            <span id="go-t">Upload</span></button>
+          <button class="btn btn-ghost" id="clear" disabled>Clear list</button>
+          <span class="summary" id="qsum"></span>
+        </div>
+      </div>
+    </div>
+
+    <aside style="display:flex;flex-direction:column;gap:18px">
+      <div class="card">
+        <div class="card-h"><h2>How it works</h2></div>
+        <div class="card-b">
+          <ol class="how">
+            <li><span class="n">1</span><div><b>Choose files</b><span>The name and columns are checked straight away.</span></div></li>
+            <li><span class="n">2</span><div><b>Upload</b><span>Sent in small pieces. A dropped connection only resends one piece.</span></div></li>
+            <li><span class="n">3</span><div><b>Saved on the server</b><span>The same file uploaded twice is not saved again.</span></div></li>
+            <li><span class="n">4</span><div><b>Loaded into Snowflake</b><span>Within a few minutes. Rows are added as they are.</span></div></li>
+          </ol>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>Accepted files</h2><span class="muted" style="font-size:12.5px" id="kcount"></span></div>
+        <div class="card-b">
+          <div class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ksearch" placeholder="Search file name or table"></div>
+          <div class="known" id="known"></div>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <div class="card-h">
+      <h2><span class="step-n">2</span>Upload history</h2>
+      <div class="toolbar">
+        <div class="seg" id="seg">
+          <button data-f="all" class="on">All <span class="c" id="c-all">0</span></button>
+          <button data-f="loaded">Loaded <span class="c" id="c-loaded">0</span></button>
+          <button data-f="progress">In progress <span class="c" id="c-progress">0</span></button>
+          <button data-f="failed">Failed <span class="c" id="c-failed">0</span></button>
+        </div>
+        <div class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="hsearch" placeholder="Search files"></div>
+      </div>
+    </div>
+    <div class="hist-head"><div>File</div><div>Upload</div><div>Snowflake</div><div style="text-align:right">Rows added</div></div>
+    <div id="hist"></div>
+    <div class="more" id="more" hidden><button class="btn btn-ghost" id="morebtn">Show more</button></div>
+  </section>
+</main>
+<div class="toasts" id="toasts"></div>
 
 <script>
 const $ = s => document.querySelector(s);
-let CFG = null, queue = [], busy = false;
+let CFG = null, queue = [], busy = false, HIST = [], filter = "all", shown = 25;
 
-const fmtMB = b => (b / 1048576).toLocaleString(undefined, {maximumFractionDigits: b < 10485760 ? 2 : 0}) + " MB";
+const fmtSize = b => b >= 1073741824 ? (b / 1073741824).toFixed(2) + " GB" : b >= 1048576 ? (b / 1048576).toFixed(b < 10485760 ? 1 : 0) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
+const fmtN = n => Number(n || 0).toLocaleString();
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const SAFE = /^[A-Za-z0-9_.-]{1,200}$/, EXT = /(\.csv|\.csv\.gz|\.csv_part\d+\.gz)$/i;
 
+const ICON = {
+  file: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>',
+  ok: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  bad: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/></svg>',
+  x: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  info: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5v.01"/></svg>',
+  empty: '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/></svg>'
+};
+
+function toast(text, icon = ICON.ok) {
+  const t = document.createElement("div"); t.className = "toast"; t.innerHTML = icon + "<span>" + esc(text) + "</span>";
+  $("#toasts").appendChild(t); setTimeout(() => t.remove(), 5000);
+}
+
+/* ---------- turn long technical messages into a short title + hint + details ---------- */
+function explain(msg) {
+  msg = String(msg || "");
+  const h = msg.match(/Header does not match\.\s*Expected:\s*(.*?)\s*\|\s*Found:\s*(.*)$/s);
+  if (h) {
+    const want = h[1].split(",").map(s => s.trim()).filter(Boolean);
+    const got = /\(empty/.test(h[2]) ? [] : h[2].split(",").map(s => s.trim()).filter(Boolean);
+    const missing = want.filter(c => !got.includes(c)), extra = got.filter(c => !want.includes(c));
+    let hint = !got.length ? "The first line of the file is empty." :
+      missing.length || extra.length ? `${missing.length} column(s) missing, ${extra.length} unexpected.` :
+      "Same columns, but in a different order.";
+    return {title: "Columns don't match the expected layout", hint, want, got, raw: msg};
+  }
+  const rules = [
+    [/not recognised/i, "Unknown file name", "The name must start with one of the accepted names (see the list on the right).", 1],
+    [/letters, digits|no spaces/i, "File name has spaces or special characters", "Rename it using letters, digits, _ . - only, then add it again.", 1],
+    [/Only \.csv/i, "File type not supported", "Use .csv, .csv.gz or .csv_partN.gz.", 1],
+    [/file is empty/i, "The file is empty", "Check the file and export it again.", 1],
+    [/uploaded before/i, "Already uploaded", "This exact file was uploaded earlier, so it was not saved again.", 1],
+    [/Incomplete upload|Unknown upload|server may have restarted/i, "Upload was interrupted", "Add the file again and press Upload.", 1],
+    [/Upload to Snowflake failed/i, "Could not send to Snowflake", "It is tried again automatically."],
+    [/not authorized|privilege|Insufficient/i, "Snowflake permission problem", "An admin needs to fix access in Snowflake. The file will be retried after that."],
+    [/does not exist/i, "Snowflake object missing", "An admin needs to check the Snowflake setup."],
+    [/Numeric value|is not recognized|parsing|conversion|Timestamp|Date '/i, "Some values could not be read", "A value doesn't match the column type. See details for the row and column."],
+    [/Number of columns in file/i, "Wrong number of columns in some rows", "Some lines have more or fewer values than the header."],
+    [/did not report|Retry/i, "Waiting to retry", "It is tried again automatically."],
+  ];
+  for (const [re, title, hint, local] of rules) if (re.test(msg)) return {title, hint, raw: local ? "" : msg};
+  const first = msg.split(/(?<=\.)\s|\n/)[0];
+  return {title: first.length > 90 ? first.slice(0, 88) + "…" : first || "Something went wrong", hint: "", raw: msg};
+}
+
+function problemBox(msg, kind = "") {
+  if (!msg) return "";
+  const e = explain(msg);
+  let cols = "";
+  if (e.want) {
+    const gotSet = new Set(e.got), wantSet = new Set(e.want);
+    cols = `<div class="cols"><div class="k">Expected</div><div class="v">${e.want.map(c => `<span class="cc ${gotSet.has(c) ? "" : "miss"}">${esc(c)}</span>`).join("")}</div>
+      <div class="k">In file</div><div class="v">${e.got.length ? e.got.map(c => `<span class="cc ${wantSet.has(c) ? "" : "extra"}">${esc(c)}</span>`).join("") : '<span class="muted" style="font-size:12px">(empty)</span>'}</div></div>`;
+  }
+  const showRaw = e.raw && e.raw !== e.title && !e.want;
+  return `<div class="problem ${kind}"><div class="problem-t">${ICON.bad}<span>${esc(e.title)}</span></div>
+    ${e.hint ? `<div class="problem-h">${esc(e.hint)}</div>` : ""}${cols}
+    ${showRaw ? `<details><summary>Technical details</summary><div class="raw">${esc(e.raw)}</div></details>` : ""}</div>`;
+}
+
+/* ---------- checks in the browser ---------- */
 function matchFile(name) {
   let best = null;
   for (const m of CFG.file_map)
     if (name.toUpperCase().startsWith(m.file_prefix.toUpperCase()) && (!best || m.file_prefix.length > best.file_prefix.length)) best = m;
   return best;
 }
-
 async function firstLine(file) {
-  // Read the start of the file (unzip it in the browser if it is gzip) and return the first line.
   const head = new Uint8Array(await file.slice(0, 2).arrayBuffer());
   let stream = file.slice(0, 4 * 1048576).stream();
   if (head[0] === 0x1f && head[1] === 0x8b) {
-    if (!("DecompressionStream" in window)) return null;          // old browser: let the server check
+    if (!("DecompressionStream" in window)) return null;
     stream = stream.pipeThrough(new DecompressionStream("gzip"));
   }
   const reader = stream.getReader(); let text = "";
@@ -120,7 +380,7 @@ async function firstLine(file) {
       text += new TextDecoder().decode(value, {stream: true});
       if (text.includes("\n")) break;
     }
-  } catch (e) { /* truncated gzip slice ends with an error after the first lines: fine */ }
+  } catch (e) { /* a cut gzip slice errors after the first lines: fine */ }
   reader.cancel().catch(() => {});
   return text.split("\n")[0].replace(/^﻿/, "").trim();
 }
@@ -128,53 +388,61 @@ const cols = line => line ? line.split(",").map(c => c.trim().replace(/^"|"$/g, 
 
 async function addFiles(list) {
   for (const f of list) {
-    if (queue.some(q => q.file.name === f.name && q.file.size === f.size)) continue;
+    if (queue.some(q => q.file.name === f.name && q.file.size === f.size && !["SAVED", "DUPLICATE"].includes(q.state))) continue;
     const item = {file: f, map: matchFile(f.name), state: "checking", msg: "", pct: 0};
     queue.push(item); render();
-    if (!SAFE.test(f.name)) { item.state = "bad"; item.msg = "Rename the file: letters, digits, _ . - only (no spaces)."; }
+    if (!SAFE.test(f.name)) { item.state = "bad"; item.msg = "File name: letters, digits, _ . - only (no spaces)."; }
     else if (!EXT.test(f.name)) { item.state = "bad"; item.msg = "Only .csv, .csv.gz or .csv_partN.gz files."; }
-    else if (!item.map) { item.state = "bad"; item.msg = "File name not recognised (see 'Which files are accepted?')."; }
+    else if (!item.map) { item.state = "bad"; item.msg = "File name not recognised."; }
     else if (f.size === 0) { item.state = "bad"; item.msg = "The file is empty."; }
     else {
       const line = await firstLine(f);
       const got = cols(line), want = item.map.header;
-      if (line === null) { item.state = "ready"; item.msg = "Header will be checked on the server."; }
+      if (line === null) { item.state = "ready"; item.msg = ""; item.note = "Columns will be checked on the server."; }
       else if (got.join(",") !== want.join(",")) { item.state = "bad"; item.msg = "Header does not match. Expected: " + want.join(",") + " | Found: " + (got.join(",") || "(empty)"); }
-      else { item.state = "ready"; item.msg = "Name and header OK."; }
+      else { item.state = "ready"; item.note = ""; }
     }
     render();
   }
 }
 
-function tagFor(i) {
-  return {checking: ["t-warn", "Checking"], ready: ["t-ok", "Ready"], bad: ["t-bad", "Will be skipped"],
-          uploading: ["t-warn", "Uploading"], checking_server: ["t-warn", "Checking on server"],
-          SAVED: ["t-ok", "Saved"], DUPLICATE: ["t-warn", "Already uploaded"], REJECTED: ["t-bad", "Rejected"],
-          error: ["t-bad", "Failed"]}[i.state] || ["t-warn", i.state];
-}
-
+/* ---------- queue ---------- */
+const QSTATE = {
+  checking: ["p-info p-run", "Checking"], ready: ["p-ok", "Ready"], bad: ["p-bad", "Can't upload"],
+  uploading: ["p-info p-run", "Uploading"], checking_server: ["p-info p-run", "Verifying"],
+  SAVED: ["p-ok", "Saved"], DUPLICATE: ["p-warn", "Already uploaded"], REJECTED: ["p-bad", "Rejected"], error: ["p-bad", "Failed"]
+};
 function render() {
-  const tb = $("#queue tbody"); tb.innerHTML = "";
-  queue.forEach((i, n) => {
-    const [cls, label] = tagFor(i);
-    const showBar = ["uploading", "checking_server"].includes(i.state);
-    tb.insertAdjacentHTML("beforeend", `<tr>
-      <td class="fname">${esc(i.file.name)}</td>
-      <td class="num">${fmtMB(i.file.size)}</td>
-      <td>${i.map ? esc(i.map.label) + `<div class="msg">${esc(i.map.target_table)}</div>` : "—"}</td>
-      <td><span class="tag ${cls}">${label}</span>${showBar ? ` <span class="msg">${i.pct.toFixed(0)}%${i.speed ? " · " + i.speed : ""}</span><div class="bar"><i style="width:${i.pct}%"></i></div>` : ""}
-          ${i.msg ? `<div class="msg">${esc(i.msg)}</div>` : ""}</td>
-      <td>${!busy && ["ready", "bad", "checking"].includes(i.state) ? `<button class="ghost" data-rm="${n}" title="Remove">✕</button>` : ""}</td></tr>`);
-  });
-  $("#qempty").style.display = queue.length ? "none" : "block";
+  const box = $("#queue");
+  if (!queue.length) { box.innerHTML = ""; }
+  else box.innerHTML = queue.map((i, n) => {
+    const [cls, label] = QSTATE[i.state] || ["p-mute", i.state];
+    const running = ["uploading", "checking_server"].includes(i.state);
+    const iconCls = i.state === "SAVED" ? 'style="background:var(--ok-soft);color:var(--ok);border-color:transparent"' : "";
+    return `<div class="file"><div class="file-row">
+        <div class="ficon" ${iconCls}>${i.state === "SAVED" ? ICON.ok : ICON.file}</div>
+        <div style="min-width:0"><div class="fname" title="${esc(i.file.name)}">${esc(i.file.name)}</div>
+          <div class="fmeta"><span>${fmtSize(i.file.size)}</span>${i.map ? `<span class="sep">•</span><span>${esc(i.map.label)}</span><span class="sep">→</span><span class="mono">${esc(i.map.target_table)}</span>` : ""}</div></div>
+        <div class="right"><span class="pill ${cls}">${label}</span>
+          ${!busy && ["ready", "bad", "checking", "error", "REJECTED"].includes(i.state) ? `<button class="iconbtn" data-rm="${n}" title="Remove">${ICON.x}</button>` : ""}</div></div>
+      ${running ? `<div class="progress"><div class="track"><i style="width:${i.pct}%"></i></div><small>${i.state === "checking_server" ? "Verifying file…" : i.pct.toFixed(0) + "%" + (i.speed ? " · " + i.speed : "")}</small></div>` : ""}
+      ${["bad", "REJECTED", "error"].includes(i.state) ? problemBox(i.msg) : ""}
+      ${i.state === "DUPLICATE" ? problemBox(i.msg, "warn") : ""}
+      ${i.state === "SAVED" ? `<div class="note">${ICON.info}<span>Saved. It will appear as <b>Loaded</b> in the history below within a few minutes.</span></div>` : ""}
+      ${i.state === "ready" && i.note ? `<div class="note">${ICON.info}<span>${esc(i.note)}</span></div>` : ""}
+    </div>`;
+  }).join("");
   const ready = queue.filter(i => i.state === "ready");
   $("#go").disabled = busy || !ready.length;
-  $("#go").textContent = ready.length ? `Upload ${ready.length} file${ready.length > 1 ? "s" : ""} (${fmtMB(ready.reduce((a, i) => a + i.file.size, 0))})` : "Upload";
+  $("#go-t").textContent = busy ? "Uploading…" : ready.length ? `Upload ${ready.length} file${ready.length > 1 ? "s" : ""} · ${fmtSize(ready.reduce((a, i) => a + i.file.size, 0))}` : "Upload";
   $("#clear").disabled = busy || !queue.length;
-  const done = queue.filter(i => ["SAVED", "DUPLICATE", "REJECTED", "error"].includes(i.state)).length;
-  $("#qsum").textContent = busy ? `Uploading… ${done} of ${queue.length - queue.filter(i => i.state === "bad").length} done. Keep this page open.` : "";
+  const bad = queue.filter(i => i.state === "bad").length;
+  $("#qcount").textContent = queue.length ? `${queue.length} file${queue.length > 1 ? "s" : ""}${bad ? ` · ${bad} can't upload` : ""}` : "";
+  const total = queue.filter(i => i.state !== "bad").length, done = queue.filter(i => ["SAVED", "DUPLICATE", "REJECTED", "error"].includes(i.state)).length;
+  $("#qsum").textContent = busy ? `${done} of ${total} done · keep this page open` : "";
 }
 
+/* ---------- upload ---------- */
 async function api(path, opts = {}, tries = 4) {
   for (let t = 1; ; t++) {
     try {
@@ -185,17 +453,16 @@ async function api(path, opts = {}, tries = 4) {
     } catch (e) {
       if (t >= tries || (e.message && !/fetch|network|Server error/i.test(e.message))) throw e;
     }
-    await new Promise(res => setTimeout(res, 1000 * t));      // wait and retry (network blip)
+    await new Promise(res => setTimeout(res, 1000 * t));
   }
 }
-
 async function uploadOne(item, batch) {
   item.state = "uploading"; item.pct = 0; item.msg = ""; render();
   const st = await api("/api/upload/start", {method: "POST", headers: {"Content-Type": "application/json"},
                        body: JSON.stringify({file_name: item.file.name, size: item.file.size, batch})});
   const size = st.chunk_size, n = st.chunks, t0 = performance.now();
   let next = 0, sent = 0;
-  const worker = async () => {                                     // 3 pieces in flight at a time
+  const worker = async () => {
     while (next < n) {
       const k = next++;
       const blob = item.file.slice(k * size, Math.min((k + 1) * size, item.file.size));
@@ -205,50 +472,99 @@ async function uploadOne(item, batch) {
     }
   };
   await Promise.all([worker(), worker(), worker()]);
-  item.state = "checking_server"; item.pct = 100; item.msg = "Checking the file (big files take a minute)…"; render();
+  item.state = "checking_server"; item.pct = 100; render();
   const res = await api(`/api/upload/${st.upload_id}/finish`, {method: "POST"});
   item.state = res.status; item.msg = res.message; render();
 }
-
 async function uploadAll() {
   busy = true; render();
   const d = new Date(), p = x => String(x).padStart(2, "0");
   const batch = `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
-  for (const item of queue.filter(i => i.state === "ready")) {
+  const todo = queue.filter(i => i.state === "ready");
+  for (const item of todo) {
     try { await uploadOne(item, batch); }
-    catch (e) { item.state = "error"; item.msg = e.message + " — you can choose the file again to retry."; render(); }
+    catch (e) { item.state = "error"; item.msg = e.message; render(); }
   }
   busy = false; render(); loadHistory();
+  const saved = todo.filter(i => i.state === "SAVED").length, failed = todo.filter(i => ["error", "REJECTED"].includes(i.state)).length;
+  toast(failed ? `${saved} saved, ${failed} failed` : `${saved} file${saved !== 1 ? "s" : ""} saved · loading into Snowflake`, failed ? ICON.bad : ICON.ok);
 }
 
-function sfTag(r) {
-  if (!r.sf_status) return "";
-  const m = {LOADED: ["t-ok", "Loaded"], NO_NEW_ROWS: ["t-warn", "No new rows"], SKIPPED_DUPLICATE: ["t-warn", "Already loaded"],
-             WAITING: ["t-warn", "Waiting"], RETRY: ["t-warn", "Retrying"], FAILED: ["t-bad", "Failed"], GAVE_UP: ["t-bad", "Failed"]}[r.sf_status] || ["t-warn", r.sf_status];
-  return `<span class="tag ${m[0]}">${m[1]}</span>` + (r.sf_message ? `<div class="msg">${esc(r.sf_message)}</div>` : "");
+/* ---------- history ---------- */
+const SF = {LOADED: ["p-ok", "Loaded"], NO_NEW_ROWS: ["p-warn", "No new rows"], SKIPPED_DUPLICATE: ["p-warn", "Already loaded"],
+            WAITING: ["p-info p-run", "Waiting"], RETRY: ["p-warn p-run", "Retrying"], FAILED: ["p-bad", "Failed"], GAVE_UP: ["p-bad", "Failed"]};
+const UP = {SAVED: ["p-ok", "Saved"], DUPLICATE: ["p-warn", "Duplicate"], REJECTED: ["p-bad", "Rejected"]};
+function group(r) {
+  if (r.status === "REJECTED" || ["FAILED", "GAVE_UP"].includes(r.sf_status)) return "failed";
+  if (r.sf_status === "LOADED" || r.sf_status === "SKIPPED_DUPLICATE" || r.sf_status === "NO_NEW_ROWS") return "loaded";
+  if (r.status === "SAVED") return "progress";
+  return "other";
 }
-
+function when(s) {
+  const d = new Date(String(s).replace(" ", "T")); if (isNaN(d)) return esc(s);
+  return d.toLocaleDateString(undefined, {day: "numeric", month: "short"}) + ", " + d.toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"});
+}
+function renderHistory() {
+  const q = $("#hsearch").value.trim().toUpperCase();
+  const counts = {all: HIST.length, loaded: 0, progress: 0, failed: 0};
+  HIST.forEach(r => { const g = group(r); if (counts[g] !== undefined) counts[g]++; });
+  for (const k in counts) $("#c-" + k).textContent = counts[k];
+  const rows = HIST.filter(r => (filter === "all" || group(r) === filter) &&
+    (!q || (r.file_name + " " + r.target_table + " " + r.user).toUpperCase().includes(q)));
+  const box = $("#hist");
+  if (!rows.length) {
+    box.innerHTML = `<div class="empty">${ICON.empty}<div>${HIST.length ? "No files match this filter." : "No uploads yet. Files you upload will appear here."}</div></div>`;
+    $("#more").hidden = true; return;
+  }
+  box.innerHTML = rows.slice(0, shown).map(r => {
+    const up = UP[r.status] || ["p-mute", r.status];
+    const sf = r.sf_status ? (SF[r.sf_status] || ["p-mute", r.sf_status]) : null;
+    const g = group(r);
+    const iconStyle = g === "loaded" ? "background:var(--ok-soft);color:var(--ok);border-color:transparent" : g === "failed" ? "background:var(--bad-soft);color:var(--bad);border-color:transparent" : "";
+    const msg = r.status === "REJECTED" ? r.message : ["FAILED", "GAVE_UP", "RETRY"].includes(r.sf_status) ? r.sf_message : r.status === "DUPLICATE" ? r.message : "";
+    const kind = ["RETRY"].includes(r.sf_status) || r.status === "DUPLICATE" ? "warn" : "";
+    return `<div class="hist-item"><div class="hist-row">
+      <div class="file-cell"><div class="ficon" style="${iconStyle}">${g === "loaded" ? ICON.ok : g === "failed" ? ICON.bad : ICON.file}</div>
+        <div style="min-width:0"><div class="fname" title="${esc(r.file_name)}">${esc(r.file_name)}</div>
+        <div class="fmeta"><span class="mono">${esc(r.target_table)}</span><span class="sep">•</span><span>${fmtSize(+r.size_bytes || 0)}</span><span class="sep">•</span><span>${when(r.uploaded_at)}</span><span class="sep">•</span><span>${esc(r.user)}</span></div></div></div>
+      <div class="stage-col"><span class="pill ${up[0]}">${up[1]}</span></div>
+      <div class="stage-col">${sf ? `<span class="pill ${sf[0]}">${sf[1]}</span>${r.sf_at && r.sf_status === "LOADED" ? `<small>${when(r.sf_at)}</small>` : ""}` : '<span class="muted">—</span>'}</div>
+      <div class="num">${r.sf_status === "LOADED" && r.sf_rows !== "" ? fmtN(r.sf_rows) + "<small>rows</small>" : '<span class="muted" style="font-weight:400">—</span>'}</div>
+    </div>${problemBox(msg, kind)}</div>`;
+  }).join("");
+  $("#more").hidden = rows.length <= shown;
+}
+function renderStats() {
+  const saved = HIST.filter(r => r.status === "SAVED");
+  $("#s-files").textContent = fmtN(saved.length);
+  $("#s-loaded").textContent = fmtN(HIST.filter(r => r.sf_status === "LOADED").length);
+  const rows = HIST.filter(r => r.sf_status === "LOADED").reduce((a, r) => a + (+r.sf_rows || 0), 0);
+  $("#s-rows").textContent = rows >= 1e6 ? (rows / 1e6).toFixed(rows >= 1e7 ? 0 : 1) + "M" : fmtN(rows);
+  $("#s-rows").title = fmtN(rows) + " rows";
+  $("#s-bad").textContent = fmtN(HIST.filter(r => group(r) === "failed").length);
+}
 async function loadHistory() {
-  const rows = await api("/api/log");
-  const tb = $("#hist tbody"); tb.innerHTML = "";
-  rows.forEach(r => {
-    const [cls, label] = tagFor({state: r.status});
-    tb.insertAdjacentHTML("beforeend", `<tr><td class="num" style="text-align:left">${esc(r.uploaded_at)}</td>
-      <td class="fname">${esc(r.file_name)}<div class="msg">${esc(r.saved_path || "")}</div></td>
-      <td>${esc(r.target_table)}</td><td class="num">${fmtMB(+r.size_bytes || 0)}</td>
-      <td><span class="tag ${cls}">${label}</span><div class="msg">${esc(r.message)}</div></td>
-      <td>${sfTag(r)}</td><td>${esc(r.user)}</td></tr>`);
-  });
-  $("#hempty").style.display = rows.length ? "none" : "block";
+  try { HIST = await api("/api/log"); } catch (e) { return; }
+  renderStats(); renderHistory();
+}
+
+/* ---------- accepted files ---------- */
+function renderKnown() {
+  const q = $("#ksearch").value.trim().toUpperCase();
+  const list = CFG.file_map.filter(m => !q || (m.file_prefix + " " + m.target_table + " " + m.label).toUpperCase().includes(q));
+  const phases = [...new Set(list.map(m => m.phase))].sort();
+  $("#known").innerHTML = list.length ? phases.map(p => {
+    const items = list.filter(m => m.phase === p);
+    return `<div><div class="phase-h"><span>Phase ${esc(p)}</span><span>${items.length}</span></div>${items.map(m =>
+      `<div class="kf"><span class="mono">${esc(m.file_prefix)}…</span><small>${esc(m.label)} → <b>${esc(m.target_table)}</b></small></div>`).join("")}</div>`;
+  }).join("") : '<div class="muted" style="font-size:13px">No match.</div>';
 }
 
 async function init() {
   CFG = await api("/api/config");
-  $("#who").textContent = "Signed in as " + CFG.user;
-  const kb = $("#known tbody");
-  CFG.file_map.forEach(m => kb.insertAdjacentHTML("beforeend",
-    `<tr><td class="fname">${esc(m.file_prefix)}…</td><td>${esc(m.label)}</td><td>${esc(m.target_table)}</td><td>${m.phase}</td></tr>`));
-  loadHistory();
+  $("#who").textContent = CFG.user; $("#av").textContent = (CFG.user || "?").slice(0, 2);
+  $("#kcount").textContent = CFG.file_map.length + " types";
+  renderKnown(); render(); loadHistory();
 }
 
 $("#picker").addEventListener("change", e => { addFiles([...e.target.files]); e.target.value = ""; });
@@ -256,12 +572,17 @@ const drop = $("#drop");
 ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("hover"); }));
 ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("hover"); }));
 drop.addEventListener("drop", e => addFiles([...e.dataTransfer.files]));
-$("#queue").addEventListener("click", e => { const n = e.target.dataset.rm; if (n !== undefined) { queue.splice(+n, 1); render(); } });
+$("#queue").addEventListener("click", e => { const b = e.target.closest("[data-rm]"); if (b) { queue.splice(+b.dataset.rm, 1); render(); } });
 $("#go").addEventListener("click", uploadAll);
 $("#clear").addEventListener("click", () => { queue = []; render(); });
+$("#seg").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return;
+  filter = b.dataset.f; shown = 25; document.querySelectorAll("#seg button").forEach(x => x.classList.toggle("on", x === b)); renderHistory(); });
+$("#hsearch").addEventListener("input", () => { shown = 25; renderHistory(); });
+$("#ksearch").addEventListener("input", renderKnown);
+$("#morebtn").addEventListener("click", () => { shown += 25; renderHistory(); });
 window.addEventListener("beforeunload", e => { if (busy) { e.preventDefault(); e.returnValue = ""; } });
 init();
-setInterval(() => { if (!busy) loadHistory(); }, 30000);   // refresh Snowflake status
+setInterval(() => { if (!busy) loadHistory(); }, 20000);
 </script>
 </body>
 </html>

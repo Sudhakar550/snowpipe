@@ -146,6 +146,8 @@ def log(user: str = Depends(current_user)):
         p = sf.get(r.get("saved_path") or "")
         r["sf_status"] = p["status"] if p else ("WAITING" if r.get("status") == "SAVED" else "")
         r["sf_message"] = p["message"] if p else ""
+        r["sf_rows"] = (p.get("rows_added") or "") if p else ""
+        r["sf_at"] = (p.get("pushed_at") or "") if p else ""
     return rows
 
 

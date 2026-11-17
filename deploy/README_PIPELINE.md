@@ -1,7 +1,7 @@
 # Upload page to Snowflake: full setup on Ubuntu (EC2)
 
 End result: Dialog uploads files on `https://<your-address>`, and within about a minute each file
-is in the right `CREDIT_RISK.RAW` table, without duplicate rows. The page shows the result.
+is in the right `CREDIT_RISK.RAW` table, every row as is. The page shows the result.
 
 ```
 Browser ──upload──> EC2: upload page ──saves──> /data/dialog_uploads/incoming/<batch>/
@@ -16,9 +16,9 @@ Time: about 45 minutes. Do the steps in order.
 
 ## Step 1. Snowflake (Snowsight worksheet, run one statement at a time)
 
-1. `16_upload_pipeline.sql`: only if you have not run it before (file map, upload log, loader).
-2. `17_pipeline_phase3_dedupe.sql`, **PARTS 1 to 4 and 6** (Phase 3 tables, 31 file types,
-   loader that skips rows already loaded). Leave PART 5 for Step 4.
+Open `snowflake/18_pipeline_setup_all.sql` and choose **Run all** (arrow next to ▶). It creates
+the file map (31 file types), upload log, Phase 3 tables, the loader (adds every row as is) and
+the undo procedure, and gives the loader access to the CSV file format. Safe to run again.
 
 Check: `SELECT COUNT(*) FROM CREDIT_RISK.RAW.FILE_MAP;` shows **31**.
 
@@ -71,8 +71,6 @@ sudo bash deploy/setup_pipeline.sh
 1. On the upload page, upload a small file, for example `DF_CP_MDA_VISITS_FILTERED.csv`.
 2. History shows **Upload: Saved** and **Snowflake: Waiting**.
 3. Within about a minute (the page refreshes every 30 seconds): **Snowflake: Loaded**, "4,121 rows added to RAW.MDA_VISITS".
-4. Upload the same file again under a new name, for example `DF_CP_MDA_VISITS_FILTERED_v2.csv`:
-   it shows **No new rows**, "All 4,121 rows were already in RAW.MDA_VISITS".
 5. In Snowsight:
    ```sql
    SELECT PROCESSED_AT, FILE_NAME, TARGET_TABLE, STATUS, ROWS_IN_FILE, ROWS_LOADED, ROWS_SKIPPED, MESSAGE
@@ -81,14 +79,11 @@ sudo bash deploy/setup_pipeline.sh
 
 ## How duplicates are handled
 
-| Case | What happens |
-|---|---|
-| Same file uploaded twice (same content) | Upload page: "Already uploaded", not saved again |
-| Same file name and content already in Snowflake | Loader: `SKIPPED_DUPLICATE` |
-| New file whose rows are partly already loaded (e.g. months sent again) | Only the new rows are added; the rest are counted in `ROWS_SKIPPED` |
-| The same row twice inside one file | Kept, because repeats can be real (e.g. two equal payments on one day) |
-
-"Same row" means the same value in every data column.
+Rows are loaded **as is**: nothing is removed. If a file repeats rows that are already in the
+table (or repeats a row inside itself), those rows are added again. Each file in the stage is
+loaded only once, and the upload page does not save the exact same file twice.
+Use `_SOURCE_FILE` in the RAW tables to see which upload each row came from, and
+`CALL CREDIT_RISK.RAW.REMOVE_UPLOAD('<path>')` to take an upload back out.
 
 ## Everyday commands (on the server)
 
@@ -108,8 +103,8 @@ sudo bash deploy/setup_pipeline.sh
 |---|---|
 | `JWT token is invalid` | The public key was not pasted correctly: run `ALTER USER DIALOG_PIPELINE SET RSA_PUBLIC_KEY = '...'` again with the key from `sudo cat /etc/dialog-pipeline/rsa_key.pub` (one line, without the BEGIN/END lines) |
 | `Incorrect username` / `account not found` | Fix `SNOWFLAKE_ACCOUNT` in `/etc/dialog-pipeline.env`, then restart |
-| `Insufficient privileges` on PUT or CALL | Run file 16 (stage ownership) and check `GRANT ROLE CR_DATA_ENGINEER TO USER DIALOG_PIPELINE` |
-| `RAW.FILE_MAP knows 23 file types` | Run file 17 PARTS 1-4 |
+| `Insufficient privileges` on PUT or CALL | Run file 18 again (stage ownership, file format access) and check `GRANT ROLE CR_DATA_ENGINEER TO USER DIALOG_PIPELINE` |
+| `RAW.FILE_MAP knows 23 file types` | Run file 18 |
 | Snowflake status stays "Retrying" | `sudo journalctl -u dialog-pipeline -n 50` shows the reason; after 5 failed tries a file is marked "Failed" |
 
 ## Cost

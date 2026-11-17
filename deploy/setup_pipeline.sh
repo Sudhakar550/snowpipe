@@ -6,10 +6,10 @@
 #
 # It will:
 #   1. create a key pair for the Snowflake user DIALOG_PIPELINE (kept in /etc/dialog-pipeline)
-#   2. print the public key and the SQL to paste in Snowsight (file 17, PART 5)
+#   2. print the public key and the SQL to paste in Snowsight (creates the user DIALOG_PIPELINE)
 #   3. save the Snowflake settings in /etc/dialog-pipeline.env
 #   4. test the login, then start the service "dialog-pipeline", which pushes every
-#      uploaded file to Snowflake and loads it into RAW (no duplicate rows)
+#      uploaded file to Snowflake and loads it into RAW (rows added as is)
 #
 # Safe to run again: the key and settings are kept.
 # =============================================================================
@@ -36,8 +36,16 @@ chmod 750 "$KEY_DIR"; chmod 640 "$KEY_DIR/rsa_key.p8"; chmod 644 "$KEY_DIR/rsa_k
 PUBKEY=$(grep -v -- "-----" "$KEY_DIR/rsa_key.pub" | tr -d '\n')
 
 # ---------------------------------------------------------------- 2. settings
+# An old settings file with a bad account value (e.g. text pasted by mistake) is replaced.
+if [[ -f "$ENV_FILE" ]] && ! grep -qE '^SNOWFLAKE_ACCOUNT=[A-Za-z0-9._-]+$' "$ENV_FILE"; then
+  echo "Settings in $ENV_FILE look wrong, asking again."; rm -f "$ENV_FILE"
+fi
 if [[ ! -f "$ENV_FILE" ]]; then
-  read -r -p "Snowflake account identifier [COUTGXW-TK77861]: " ACC; ACC=${ACC:-COUTGXW-TK77861}
+  while true; do
+    read -r -p "Snowflake account identifier [COUTGXW-TK77861]: " ACC; ACC=${ACC:-COUTGXW-TK77861}
+    [[ "$ACC" =~ ^[A-Za-z0-9._-]+$ ]] && break
+    echo "That does not look like an account identifier (letters, digits, - . _ only, e.g. COUTGXW-TK77861). Try again."
+  done
   umask 077
   cat > "$ENV_FILE" <<EOF
 # Snowflake login for the upload pipeline (edit, then: sudo systemctl restart dialog-pipeline)
@@ -86,8 +94,8 @@ run_test() {
 if ! run_test 2>/dev/null; then
   echo
   echo "======================================================================"
-  echo " ONE STEP IN SNOWFLAKE: in a Snowsight worksheet, run file 17 PART 5"
-  echo " with this public key, or paste these lines (one at a time):"
+  echo " ONE STEP IN SNOWFLAKE: in a Snowsight worksheet, paste these lines"
+  echo " one at a time, as ACCOUNTADMIN:"
   echo "======================================================================"
   echo "USE ROLE ACCOUNTADMIN;"
   echo "CREATE USER IF NOT EXISTS DIALOG_PIPELINE TYPE = SERVICE DEFAULT_ROLE = CR_DATA_ENGINEER DEFAULT_WAREHOUSE = CR_LOAD_WH DEFAULT_NAMESPACE = CREDIT_RISK.RAW;"
@@ -98,7 +106,7 @@ if ! run_test 2>/dev/null; then
   if ! run_test; then
     echo
     echo "Still cannot log in. Check: account identifier in $ENV_FILE, the key was pasted as one line,"
-    echo "and file 16 + 17 were run. Then run this script again."
+    echo "and snowflake/18_pipeline_setup_all.sql was run. Then run this script again."
     exit 1
   fi
 fi

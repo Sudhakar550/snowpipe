@@ -7,7 +7,7 @@ Every PIPELINE_INTERVAL seconds it:
      status SAVED that are not finished in <DATA_DIR>/pipeline_log.csv
   2. PUTs each one to @CREDIT_RISK.RAW.STG_DIALOG/incoming/<batch>/ (same folder name as on
      the server, compressed on the way, any size)
-  3. CALLs CREDIT_RISK.RAW.LOAD_NEW_FILES()  (file 17: header check, no duplicate rows)
+  3. CALLs CREDIT_RISK.RAW.LOAD_NEW_FILES()  (file 18: header check, rows added as is)
   4. writes the result per file to <DATA_DIR>/pipeline_log.csv, which the upload page shows
 
 Usage:
@@ -195,7 +195,7 @@ def main() -> None:
         print("Connected to Snowflake as user=%s role=%s warehouse=%s database=%s" % cur.fetchone())
         cur.execute("SELECT COUNT(*) FROM CREDIT_RISK.RAW.FILE_MAP")
         n = cur.fetchone()[0]
-        print(f"RAW.FILE_MAP knows {n} file types" + ("" if n >= 31 else "  <-- expected 31: run snowflake/17_pipeline_phase3_dedupe.sql"))
+        print(f"RAW.FILE_MAP knows {n} file types" + ("" if n >= 31 else "  <-- expected 31: run snowflake/18_pipeline_setup_all.sql"))
         conn.close()
         return
     if "--once" in sys.argv:
