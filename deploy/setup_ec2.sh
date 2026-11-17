@@ -11,7 +11,7 @@
 #   3. install Snowflake CLI in the same environment (for the later Snowflake step)
 #   4. keep uploaded files in /data/dialog_uploads
 #   5. run the app as a service (starts on boot, restarts if it stops)
-#   6. publish it on https://<your address> with a real certificate
+#   6. publish it on https://<IP or domain> through Caddy (HTTPS)
 #
 # Safe to run again (for example after copying a new version of the app).
 # =============================================================================
@@ -26,16 +26,25 @@ if [[ $EUID -ne 0 ]]; then echo "Run with sudo: sudo bash deploy/setup_ec2.sh"; 
 if [[ ! -f "$SRC_DIR/app.py" ]]; then echo "app.py not found in $SRC_DIR"; exit 1; fi
 
 # ---------------------------------------------------------------- address
-# A real certificate needs a host name. With no company domain we use
-# <public-ip>.sslip.io, which always points to this server's IP.
+# Two choices:
+#   * the server's IP address (default): works everywhere, also behind office firewalls that
+#     block sslip.io. The browser shows a "Not secure" warning once (self-made certificate);
+#     the connection is still encrypted.
+#   * a real domain pointed at the Elastic IP (e.g. dialog-upload.thbs.com): trusted
+#     certificate, no warning.
+# On a re-run the address used last time is the default, so pressing Enter keeps it.
 TOKEN=$(curl -s -m 3 -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 60" || true)
 PUBLIC_IP=$(curl -s -m 3 -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4 || true)
-DEFAULT_HOST="${PUBLIC_IP//./-}.sslip.io"
+[[ -z "$PUBLIC_IP" ]] && PUBLIC_IP=$(curl -s -m 5 http://checkip.amazonaws.com || true)
+LAST_HOST=$(sed -n 's/^# dialog-upload address: //p' /etc/caddy/Caddyfile 2>/dev/null | head -1)
+DEFAULT_HOST=${LAST_HOST:-$PUBLIC_IP}
 echo
 echo "Public IP of this server: ${PUBLIC_IP:-unknown}"
-read -r -p "Web address to use [${DEFAULT_HOST}] (or type your own domain, e.g. upload.thbs.com): " SITE_HOST
+read -r -p "Web address [${DEFAULT_HOST}] (Enter = keep, or type a domain e.g. dialog-upload.thbs.com): " SITE_HOST
 SITE_HOST=${SITE_HOST:-$DEFAULT_HOST}
-if [[ -z "$SITE_HOST" || "$SITE_HOST" == ".sslip.io" ]]; then echo "No address. Attach an Elastic IP first, then run again."; exit 1; fi
+if [[ -z "$SITE_HOST" ]]; then echo "No address. Attach an Elastic IP first, then run again."; exit 1; fi
+if [[ ! "$SITE_HOST" =~ ^[A-Za-z0-9.-]+$ ]]; then echo "That is not a valid address: $SITE_HOST"; exit 1; fi
+IS_IP=0; [[ "$SITE_HOST" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && IS_IP=1
 
 # ---------------------------------------------------------------- logins
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -99,8 +108,24 @@ WantedBy=multi-user.target
 EOF
 
 # ---------------------------------------------------------------- HTTPS
-cat > /etc/caddy/Caddyfile <<EOF
-${SITE_HOST} {
+if [[ $IS_IP -eq 1 ]]; then
+  # IP address: self-made certificate. Browsers send no name for an IP, so default_sni
+  # tells Caddy which certificate to use.
+  { echo "# dialog-upload address: ${SITE_HOST}"
+    echo "{"
+    echo "    default_sni ${SITE_HOST}"
+    echo "}"
+    echo
+    echo "${SITE_HOST} {"
+    echo "    tls internal"
+  } > /etc/caddy/Caddyfile
+else
+  # Real domain: Caddy gets a free trusted certificate by itself.
+  { echo "# dialog-upload address: ${SITE_HOST}"
+    echo "${SITE_HOST} {"
+  } > /etc/caddy/Caddyfile
+fi
+cat >> /etc/caddy/Caddyfile <<'CADDY'
     encode gzip
     reverse_proxy 127.0.0.1:8000 {
         transport http {
@@ -109,7 +134,8 @@ ${SITE_HOST} {
         }
     }
 }
-EOF
+CADDY
+caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null
 
 systemctl daemon-reload
 systemctl enable --now dialog-upload
@@ -122,7 +148,11 @@ echo
 if systemctl is-active --quiet dialog-upload && systemctl is-active --quiet caddy; then
   echo "======================================================================"
   echo " DONE. Upload page:  https://${SITE_HOST}"
-  echo " (the certificate can take up to a minute the first time)"
+  if [[ $IS_IP -eq 1 ]]; then
+    echo " (browser warning the first time: Advanced -> Continue. The connection is encrypted.)"
+  else
+    echo " (the certificate can take up to a minute the first time)"
+  fi
   echo " Files are kept in:  ${DATA_DIR}/incoming/"
   echo " Upload log:         ${DATA_DIR}/upload_log.csv"
   echo " Logins:             ${ENV_FILE}"

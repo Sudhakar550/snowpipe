@@ -391,6 +391,7 @@ function explain(msg) {
     [/Only \.csv/i, "File type not supported", "Use .csv, .csv.gz or .csv_partN.gz.", 1],
     [/file is empty/i, "The file is empty", "Check the file and export it again.", 1],
     [/uploaded before/i, "Already uploaded", "This exact file was uploaded earlier, so it was not saved again.", 1],
+    [/No new rows/i, "No new rows", "Every row in this file is already in the table, so nothing was added.", 1],
     [/Incomplete upload|Unknown upload|server may have restarted/i, "Upload was interrupted", "Add the file again and press Upload.", 1],
     [/Upload to Snowflake failed/i, "Could not send to Snowflake", "It is tried again automatically."],
     [/not authorized|privilege|Insufficient/i, "Snowflake permission problem", "An admin needs to fix access in Snowflake. The file will be retried after that."],
@@ -581,22 +582,22 @@ function renderHistory() {
     const sf = r.sf_status ? (SF[r.sf_status] || ["p-mute", r.sf_status]) : null;
     const g = group(r);
     const ic = g === "loaded" ? ["ok", ICON.ok] : g === "failed" ? ["bad", ICON.bad] : g === "progress" ? ["run", ICON.up] : ["", ICON.file];
-    const msg = r.status === "REJECTED" ? r.message : ["FAILED", "GAVE_UP", "RETRY"].includes(r.sf_status) ? r.sf_message : r.status === "DUPLICATE" ? r.message : "";
-    const kind = r.sf_status === "RETRY" || r.status === "DUPLICATE" ? "warn" : "";
+    const msg = r.status === "REJECTED" ? r.message : ["FAILED", "GAVE_UP", "RETRY", "NO_NEW_ROWS"].includes(r.sf_status) ? r.sf_message : r.status === "DUPLICATE" ? r.message : "";
+    const kind = ["RETRY", "NO_NEW_ROWS"].includes(r.sf_status) || r.status === "DUPLICATE" ? "warn" : "";
     return `<div class="hist-item"><div class="hist-row">
       <div class="file-cell"><div class="ficon ${ic[0]}">${ic[1]}</div>
         <div style="min-width:0"><div class="fname" title="${esc(r.file_name)}">${esc(r.file_name)}</div>
         <div class="fmeta"><span class="tbl">${esc(r.target_table)}</span><span>${fmtSize(+r.size_bytes || 0)}</span><span class="sep">•</span><span>${when(r.uploaded_at)}</span><span class="sep">•</span><span>${esc(r.user)}</span></div></div></div>
       <div class="stage-col"><span class="pill ${up[0]}">${up[1]}</span></div>
       <div class="stage-col">${sf ? `<span class="pill ${sf[0]}">${sf[1]}</span>${r.sf_at && r.sf_status === "LOADED" ? `<small>${when(r.sf_at)}</small>` : ""}` : '<span class="muted">—</span>'}</div>
-      <div class="num">${r.sf_status === "LOADED" && r.sf_rows !== "" ? fmtN(r.sf_rows) + "<small>rows</small>" : '<span class="muted" style="font-weight:400">—</span>'}</div>
+      <div class="num">${["LOADED", "NO_NEW_ROWS"].includes(r.sf_status) && r.sf_rows !== "" ? fmtN(r.sf_rows) + `<small>${+r.sf_skipped ? fmtN(r.sf_skipped) + " duplicates skipped" : "rows"}</small>` : '<span class="muted" style="font-weight:400">—</span>'}</div>
     </div>${problemBox(msg, kind)}</div>`;
   }).join("");
   $("#more").hidden = rows.length <= shown;
 }
 function renderStats() {
   $("#s-files").textContent = fmtN(HIST.filter(r => r.status === "SAVED").length);
-  $("#s-loaded").textContent = fmtN(HIST.filter(r => r.sf_status === "LOADED").length);
+  $("#s-loaded").textContent = fmtN(HIST.filter(r => ["LOADED", "NO_NEW_ROWS"].includes(r.sf_status)).length);
   const rows = HIST.filter(r => r.sf_status === "LOADED").reduce((a, r) => a + (+r.sf_rows || 0), 0);
   $("#s-rows").textContent = rows >= 1e6 ? (rows / 1e6).toFixed(rows >= 1e7 ? 0 : 1) + "M" : fmtN(rows);
   $("#s-rows").title = fmtN(rows) + " rows";

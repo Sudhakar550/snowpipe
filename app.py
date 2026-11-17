@@ -8,7 +8,7 @@ What it does
   * A web page where Dialog uploads the data files (any size: the browser sends
     each file in 8 MB pieces, so there is no upload limit and a dropped
     connection only re-sends one piece).
-  * Every file is checked: its name must match one of the 23 known files and
+  * Every file is checked: its name must match one of the 31 known files and
     its first line must be the expected header.
   * Accepted files are saved, unchanged, in
         <DATA_DIR>/incoming/<batch>/<file name>
@@ -147,6 +147,7 @@ def log(user: str = Depends(current_user)):
         r["sf_status"] = p["status"] if p else ("WAITING" if r.get("status") == "SAVED" else "")
         r["sf_message"] = p["message"] if p else ""
         r["sf_rows"] = (p.get("rows_added") or "") if p else ""
+        r["sf_skipped"] = (p.get("rows_skipped") or "") if p else ""
         r["sf_at"] = (p.get("pushed_at") or "") if p else ""
     return rows
 
