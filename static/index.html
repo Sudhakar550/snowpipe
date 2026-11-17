@@ -6,238 +6,308 @@
 <title>Dialog Data Upload</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f5f6fa; --surface:#ffffff; --surface-2:#f9fafc; --ink:#141a26; --ink-2:#3b4556; --muted:#6b7587;
-  --line:#e4e7ee; --line-2:#eef0f5;
-  --accent:#4f46e5; --accent-2:#6366f1; --accent-soft:#eef0ff; --accent-ink:#ffffff;
-  --ok:#0f7a4a; --ok-soft:#e5f6ed; --warn:#9a5b00; --warn-soft:#fff3dc; --bad:#b4232a; --bad-soft:#fdecec;
-  --info:#1d5fd1; --info-soft:#e7f0ff;
-  --shadow:0 1px 2px rgba(16,24,40,.04),0 4px 16px rgba(16,24,40,.06);
-  --radius:14px;
+  --bg:#f3f4f8; --surface:#ffffff; --surface-2:#f7f8fb; --ink:#0f1422; --ink-2:#394357; --muted:#6c7689;
+  --line:#e3e6ee; --line-2:#eef0f5;
+  --accent:#5b4cf0; --accent-2:#7a5cff; --accent-soft:#efedff; --accent-ink:#fff;
+  --ok:#0e7a4c; --ok-soft:#e3f6ec; --warn:#9a5b00; --warn-soft:#fff2d9; --bad:#c0262d; --bad-soft:#fdeceb;
+  --info:#2457d6; --info-soft:#e8efff;
+  --shadow:0 1px 2px rgba(15,20,34,.04),0 8px 24px -6px rgba(15,20,34,.08);
+  --shadow-lg:0 2px 4px rgba(15,20,34,.04),0 24px 48px -12px rgba(15,20,34,.18);
   --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --hero:#0b0f1e;
 }
 @media (prefers-color-scheme:dark){:root{
-  --bg:#0d1117; --surface:#151b24; --surface-2:#1a212c; --ink:#e8edf4; --ink-2:#c3cbd8; --muted:#8b96a8;
-  --line:#262f3c; --line-2:#1f2732;
-  --accent:#8b8cff; --accent-2:#a5a6ff; --accent-soft:#23254a; --accent-ink:#0d1117;
-  --ok:#5fd39a; --ok-soft:#12301f; --warn:#f2b45a; --warn-soft:#33250c; --bad:#ff8f8f; --bad-soft:#3a1a1c;
-  --info:#7fb0ff; --info-soft:#152742;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  --bg:#0a0d16; --surface:#121827; --surface-2:#171e2f; --ink:#eaeef6; --ink-2:#c3cad8; --muted:#8a94a8;
+  --line:#232c3f; --line-2:#1b2333;
+  --accent:#8f84ff; --accent-2:#a99fff; --accent-soft:#221f4a; --accent-ink:#0a0d16;
+  --ok:#5ad49a; --ok-soft:#10301f; --warn:#f3b55a; --warn-soft:#33250c; --bad:#ff8c8c; --bad-soft:#3a181b;
+  --info:#82adff; --info-soft:#14274a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -6px rgba(0,0,0,.4);
+  --shadow-lg:0 24px 48px -12px rgba(0,0,0,.6);
+  --hero:#070a13;
 }}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:14.5px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 button,input{font:inherit;color:inherit}
-.mono{font-family:var(--mono);font-size:12.5px}
+.mono{font-family:var(--mono);font-size:12px}
 .muted{color:var(--muted)}
 svg{flex:none}
+[hidden]{display:none!important}
+input[type=file]{display:none}
+.container{max-width:1180px;margin:0 auto;padding:0 24px}
 
-/* ---------- top bar ---------- */
-.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.top-in{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px}
-.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#9333ea);display:grid;place-items:center;color:#fff;box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 35%,transparent)}
-.brand b{display:block;font-size:15.5px;letter-spacing:-.01em}
-.brand span{font-size:12.5px;color:var(--muted)}
+/* ================= HERO ================= */
+.hero{position:relative;background:var(--hero);color:#fff;overflow:hidden;padding-bottom:84px}
+.hero::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(600px 300px at 12% -10%,rgba(122,92,255,.55),transparent 70%),
+             radial-gradient(500px 280px at 92% 10%,rgba(0,180,255,.28),transparent 70%),
+             radial-gradient(700px 300px at 60% 120%,rgba(236,72,153,.22),transparent 70%)}
+.hero::after{content:"";position:absolute;inset:0;opacity:.18;
+  background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);
+  background-size:44px 44px;mask-image:linear-gradient(to bottom,#000,transparent 85%)}
+.hero>*{position:relative;z-index:1}
+.nav{display:flex;align-items:center;gap:14px;padding:18px 0}
+.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#7a5cff,#c04cf0);display:grid;place-items:center;box-shadow:0 6px 20px rgba(122,92,255,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+.brand b{display:block;font-size:15px;letter-spacing:-.01em}
+.brand span{font-size:12px;color:rgba(255,255,255,.55)}
 .spacer{flex:1}
-.live{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);padding:6px 11px;border:1px solid var(--line);border-radius:99px;background:var(--surface)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent);animation:pulse 2s infinite}
+.glass{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px)}
+.live{display:flex;align-items:center;gap:8px;font-size:12.5px;color:rgba(255,255,255,.8);padding:7px 12px;border-radius:99px}
+.dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:pulse 2s infinite}
 @keyframes pulse{70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
-.me{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2)}
-.avatar{width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:12.5px;text-transform:uppercase}
+.navbtn{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:#fff;padding:7px 12px;border-radius:99px;cursor:pointer;transition:.15s}
+.navbtn:hover{background:rgba(255,255,255,.14)}
+.me{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:99px;font-size:13px}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#fff,#d8d2ff);color:#3b2fc0;display:grid;place-items:center;font-weight:800;font-size:11.5px;text-transform:uppercase}
 
-/* ---------- layout ---------- */
-.wrap{max-width:1200px;margin:0 auto;padding:24px 20px 64px}
-.hero h1{margin:0;font-size:26px;letter-spacing:-.02em}
-.hero p{margin:6px 0 0;color:var(--muted);max-width:720px}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center}
-.stat .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center}
-.stat .v{font-size:22px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15}
-.stat .l{font-size:12.5px;color:var(--muted)}
+.hero-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:40px;align-items:end;padding:26px 0 0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.04em;color:#c9c1ff;padding:5px 11px;border-radius:99px;margin-bottom:14px}
+.hero h1{margin:0;font-size:36px;line-height:1.12;letter-spacing:-.03em;font-weight:800}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#b8a8ff,#7dd3fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:12px 0 0;color:rgba(255,255,255,.65);font-size:15px;max-width:460px}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);border-radius:16px;overflow:hidden}
+.flow>div{padding:16px 16px 15px;position:relative}
+.flow>div+div{border-left:1px solid rgba(255,255,255,.1)}
+.flow .n{font-size:11px;font-weight:700;color:#a99fff;letter-spacing:.08em}
+.flow b{display:block;font-size:13.5px;margin:6px 0 3px}
+.flow span{display:block;font-size:12px;color:rgba(255,255,255,.55);line-height:1.45}
+.flow svg{color:#c9c1ff;display:block;margin-bottom:10px}
+
+/* ================= STATS ================= */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:-56px;position:relative;z-index:2}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow-lg);display:flex;gap:14px;align-items:center}
+.stat .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center}
+.stat .v{font-size:24px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat .l{font-size:12.5px;color:var(--muted);margin-top:2px}
 .ic.a{background:var(--accent-soft);color:var(--accent)} .ic.g{background:var(--ok-soft);color:var(--ok)}
 .ic.b{background:var(--info-soft);color:var(--info)} .ic.r{background:var(--bad-soft);color:var(--bad)}
-.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line-2)}
-.card-h h2{margin:0;font-size:15.5px;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
-.card-b{padding:18px 20px}
-.step-n{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:12px;display:grid;place-items:center;font-weight:700}
 
-/* ---------- drop zone ---------- */
-.drop{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;border:1.5px dashed color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:12px;padding:34px 18px;cursor:pointer;
-  background:radial-gradient(ellipse at top,color-mix(in srgb,var(--accent) 7%,transparent),transparent 70%);transition:.18s}
-.drop:hover,.drop.hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent);transform:translateY(-1px)}
-.drop .big{width:52px;height:52px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-bottom:4px}
-.drop b{font-size:16px}
-.drop b u{color:var(--accent);text-decoration:none}
+/* ================= CARDS ================= */
+main{padding:24px 0 70px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-top:20px}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.card-h h2{margin:0;font-size:16px;letter-spacing:-.015em;font-weight:700}
+.card-h p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.card-b{padding:20px 24px 22px}
+.linkbtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 13px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:.15s}
+.linkbtn:hover{border-color:var(--accent);color:var(--accent)}
+.linkbtn .c{font-size:11px;padding:1px 7px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+
+/* drop zone: compact, horizontal */
+.drop{display:flex;align-items:center;gap:18px;border:1.5px dashed color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:14px;padding:22px 24px;cursor:pointer;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 6%,var(--surface)),var(--surface) 60%);transition:.18s}
+.drop:hover,.drop.hover{border-color:var(--accent);border-style:solid;box-shadow:0 0 0 4px var(--accent-soft)}
+.drop .big{width:54px;height:54px;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;display:grid;place-items:center;box-shadow:0 8px 20px -4px color-mix(in srgb,var(--accent) 55%,transparent)}
+.drop .txt{flex:1;min-width:0}
+.drop b{display:block;font-size:16px;letter-spacing:-.01em}
 .drop span{font-size:13px;color:var(--muted)}
-.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:4px}
-.chip{font-size:11.5px;padding:3px 8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
-input[type=file]{display:none}
-[hidden]{display:none!important}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:11px;padding:4px 9px;border-radius:8px;background:var(--surface);border:1px solid var(--line);color:var(--ink-2)}
 
-/* ---------- file rows (queue + history) ---------- */
-.files{display:flex;flex-direction:column;gap:10px;margin-top:16px}
-.file{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface);transition:.15s}
-.file:hover{border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}
-.file-row{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center}
-.ficon{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
-.fname{font-weight:600;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fmeta{font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:1px}
-.fmeta .sep{opacity:.5}
+/* file cards */
+.files{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.file{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--surface);transition:.15s}
+.file:hover{box-shadow:var(--shadow)}
+.file-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:14px;align-items:center}
+.ficon{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.ficon.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.ficon.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.ficon.run{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.fname{font-weight:600;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.005em}
+.fmeta{font-size:12.5px;color:var(--muted);display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:2px}
+.fmeta .sep{opacity:.45}
+.tbl{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line-2);padding:0 6px;border-radius:5px}
 .right{display:flex;align-items:center;gap:8px}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.6}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.4}
 .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .p-ok{background:var(--ok-soft);color:var(--ok)} .p-warn{background:var(--warn-soft);color:var(--warn)}
 .p-bad{background:var(--bad-soft);color:var(--bad)} .p-info{background:var(--info-soft);color:var(--info)}
+.p-acc{background:var(--accent-soft);color:var(--accent)}
 .p-mute{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .p-run::before{animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.25}}
 .iconbtn{width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer}
 .iconbtn:hover{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
-.progress{margin-top:10px;display:flex;align-items:center;gap:10px}
+.progress{margin-top:10px;display:flex;align-items:center;gap:12px;padding-left:54px}
 .track{flex:1;height:6px;border-radius:99px;background:var(--line-2);overflow:hidden}
-.track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent),#9333ea);transition:width .25s}
-.progress small{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:110px;text-align:right}
-.note{margin-top:10px;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:flex-start}
+.track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent),#c04cf0);transition:width .25s;position:relative}
+.track i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);animation:shine 1.2s infinite}
+@keyframes shine{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.progress small{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:120px;text-align:right}
+.note{margin-top:8px;padding-left:54px;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
 
 /* problem box */
-.problem{margin-top:10px;border-radius:10px;background:var(--bad-soft);border:1px solid color-mix(in srgb,var(--bad) 22%,transparent);padding:10px 12px;font-size:13px}
-.problem.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 25%,transparent)}
-.problem-t{display:flex;align-items:flex-start;gap:8px;color:var(--bad);font-weight:600}
+.problem{margin:10px 0 0 54px;border-radius:12px;background:var(--bad-soft);border:1px solid color-mix(in srgb,var(--bad) 20%,transparent);padding:10px 14px;font-size:13px}
+.problem.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 22%,transparent)}
+.problem-t{display:flex;align-items:center;gap:8px;color:var(--bad);font-weight:600}
 .problem.warn .problem-t{color:var(--warn)}
-.problem-h{color:var(--ink-2);margin:3px 0 0 24px;font-weight:400}
+.problem-h{color:var(--ink-2);margin:2px 0 0 24px}
 .problem details{margin:6px 0 0 24px}
-.problem summary{cursor:pointer;color:var(--muted);font-size:12.5px;user-select:none;list-style:none;display:inline-flex;gap:4px;align-items:center}
+.problem summary{cursor:pointer;color:var(--muted);font-size:12.5px;user-select:none;list-style:none;display:inline-flex;gap:5px;align-items:center}
 .problem summary::-webkit-details-marker{display:none}
-.problem summary::before{content:"▸";transition:.15s;display:inline-block}
+.problem summary::before{content:"›";font-size:15px;transition:.15s;display:inline-block}
 .problem details[open] summary::before{transform:rotate(90deg)}
 .raw{margin-top:6px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;white-space:pre-wrap;word-break:break-word;max-height:180px;overflow:auto}
-.cols{display:grid;grid-template-columns:72px minmax(0,1fr);gap:6px 10px;margin:8px 0 0 24px;align-items:start}
-.cols .k{font-size:12px;color:var(--muted);padding-top:3px}
+.cols{display:grid;grid-template-columns:70px minmax(0,1fr);gap:6px 10px;margin:8px 0 2px 24px;align-items:start}
+.cols .k{font-size:12px;color:var(--muted);padding-top:2px}
 .cols .v{display:flex;flex-wrap:wrap;gap:4px}
 .cc{font-family:var(--mono);font-size:11px;padding:2px 6px;border-radius:6px;background:var(--surface);border:1px solid var(--line);color:var(--ink-2)}
-.cc.miss{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 35%,transparent);color:var(--bad)}
-.cc.extra{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 35%,transparent);color:var(--warn)}
+.cc.miss{background:var(--surface);border-color:color-mix(in srgb,var(--bad) 45%,transparent);color:var(--bad);text-decoration:line-through;text-decoration-thickness:1px}
+.cc.extra{background:var(--surface);border-color:color-mix(in srgb,var(--warn) 45%,transparent);color:var(--warn)}
 
-/* actions */
-.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)}
-.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:600;font-size:13.5px;cursor:pointer;border:1px solid transparent;transition:.15s}
-.btn-primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 30%,transparent)}
-.btn-primary:hover:not(:disabled){background:var(--accent-2);transform:translateY(-1px)}
+/* action bar */
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:11px;padding:11px 18px;font-weight:600;font-size:13.5px;cursor:pointer;border:1px solid transparent;transition:.15s}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 8px 20px -6px color-mix(in srgb,var(--accent) 60%,transparent),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 24px -6px color-mix(in srgb,var(--accent) 65%,transparent)}
 .btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink-2)}
 .btn-ghost:hover:not(:disabled){background:var(--surface-2)}
-.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none}
 .summary{font-size:13px;color:var(--muted);margin-left:auto}
-.empty{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 10px;color:var(--muted);font-size:13px;text-align:center}
-.empty svg{opacity:.5}
 
-/* ---------- side panel ---------- */
-.how{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
-.how li{display:grid;grid-template-columns:30px 1fr;gap:10px;position:relative;padding-bottom:16px}
-.how li:not(:last-child)::after{content:"";position:absolute;left:14px;top:30px;bottom:2px;width:2px;background:var(--line)}
-.how .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12.5px;z-index:1}
-.how b{display:block;font-size:13.5px}
-.how span{font-size:12.5px;color:var(--muted)}
-.search{position:relative}
-.search input{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 12px 9px 34px;background:var(--surface-2);outline:none;font-size:13px}
-.search input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft)}
-.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
-.known{margin-top:12px;max-height:440px;overflow:auto;display:flex;flex-direction:column;gap:14px;padding-right:2px}
-.phase-h{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
-.kf{padding:8px 10px;border-radius:9px;border:1px solid var(--line-2);margin-bottom:6px;background:var(--surface-2)}
-.kf .mono{display:block;font-size:11.5px;color:var(--ink);word-break:break-all}
-.kf small{font-size:12px;color:var(--muted)}
-.kf small b{color:var(--ink-2);font-weight:500}
-
-/* ---------- history ---------- */
+/* ================= HISTORY ================= */
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px}
-.seg button{border:0;background:transparent;padding:6px 11px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;gap:6px;align-items:center}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:3px}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;gap:6px;align-items:center;white-space:nowrap}
 .seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .seg .c{font-size:11px;padding:0 6px;border-radius:99px;background:var(--line-2);color:var(--muted);font-variant-numeric:tabular-nums}
 .seg button.on .c{background:var(--accent-soft);color:var(--accent)}
-.toolbar .search{width:240px}
-.hist-head,.hist-row{display:grid;grid-template-columns:minmax(0,2.4fr) 130px 160px 110px;gap:14px;align-items:center}
-.hist-head{padding:10px 20px;font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line-2);background:var(--surface-2)}
-.hist-item{padding:14px 20px;border-bottom:1px solid var(--line-2)}
+.search{position:relative}
+.search input{width:100%;border:1px solid var(--line);border-radius:11px;padding:9px 12px 9px 34px;background:var(--surface-2);outline:none;font-size:13px}
+.search input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.toolbar .search{width:230px}
+.hist-head,.hist-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 150px 120px;gap:16px;align-items:center}
+.hist-head{padding:10px 24px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line-2);background:var(--surface-2)}
+.hist-item{padding:14px 24px;border-bottom:1px solid var(--line-2);transition:background .15s}
 .hist-item:last-child{border-bottom:0}
 .hist-item:hover{background:var(--surface-2)}
-.hist-row .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.hist-row .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
 .hist-row .num small{display:block;font-weight:400;color:var(--muted);font-size:11.5px}
-.file-cell{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:center;min-width:0}
+.file-cell{display:grid;grid-template-columns:40px minmax(0,1fr);gap:14px;align-items:center;min-width:0}
 .stage-col{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
 .stage-col small{font-size:11.5px;color:var(--muted)}
-.more{display:flex;justify-content:center;padding:12px}
+.more{display:flex;justify-content:center;padding:14px;border-top:1px solid var(--line-2)}
+.empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:36px 10px;color:var(--muted);font-size:13px;text-align:center}
+.empty .eic{width:52px;height:52px;border-radius:15px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center}
 
-/* ---------- toast ---------- */
-.toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:50}
-.toast{background:var(--ink);color:var(--surface);padding:12px 16px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:13.5px;display:flex;gap:10px;align-items:center;max-width:380px;animation:in .25s ease}
+/* ================= DRAWER ================= */
+.scrim{position:fixed;inset:0;background:rgba(8,10,20,.45);backdrop-filter:blur(2px);z-index:60;opacity:0;pointer-events:none;transition:.2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--surface);z-index:61;box-shadow:-20px 0 60px rgba(0,0,0,.25);
+  transform:translateX(100%);transition:transform .25s cubic-bezier(.2,.8,.2,1),visibility 0s .25s;visibility:hidden;display:flex;flex-direction:column}
+.drawer.open{transform:none;visibility:visible;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.drawer-h{padding:20px 22px 14px;border-bottom:1px solid var(--line-2)}
+.drawer-h .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.drawer-h h3{margin:0;font-size:17px;letter-spacing:-.015em}
+.drawer-h p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.drawer-b{flex:1;overflow:auto;padding:16px 22px 26px}
+.phase-h{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px;display:flex;justify-content:space-between}
+.kf{padding:10px 12px;border-radius:11px;border:1px solid var(--line-2);margin-bottom:6px;background:var(--surface-2)}
+.kf .mono{display:block;color:var(--ink);word-break:break-all;font-size:11.5px}
+.kf small{font-size:12px;color:var(--muted)}
+.kf small b{color:var(--ink-2);font-weight:600}
+.kf details{margin-top:4px}
+.kf summary{font-size:11.5px;color:var(--accent);cursor:pointer;list-style:none}
+.kf summary::-webkit-details-marker{display:none}
+.kf .cols{margin:6px 0 0;grid-template-columns:1fr}
+
+/* toast */
+.toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:10px;z-index:80}
+.toast{background:#111827;color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 14px 34px rgba(0,0,0,.3);font-size:13.5px;display:flex;gap:10px;align-items:center;max-width:380px;animation:in .25s ease}
 @keyframes in{from{transform:translateY(8px);opacity:0}}
 
-/* ---------- responsive ---------- */
-@media (max-width:1000px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* ================= RESPONSIVE ================= */
+@media (max-width:980px){
+  .hero-main{grid-template-columns:1fr;gap:22px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 @media (max-width:760px){
-  .top-in{padding:10px 16px}.live{display:none}.me span{display:none}
-  .wrap{padding:18px 16px 50px}
-  .hist-head{display:none}
-  .hist-row{grid-template-columns:1fr 1fr;gap:10px}
-  .hist-row .file-cell{grid-column:1/-1}
-  .hist-row .num{text-align:left}
-  .toolbar .search{width:100%}
-  .card-h{flex-wrap:wrap}
-  .summary{margin-left:0;width:100%}
-  .file-row{grid-template-columns:36px minmax(0,1fr)}
+  .container{padding:0 16px}
+  .live,.me span{display:none}
+  .hero{padding-bottom:70px}
+  .hero h1{font-size:28px}
+  .flow{grid-template-columns:1fr 1fr}
+  .flow>div:nth-child(3){border-left:0}
+  .flow>div:nth-child(n+3){border-top:1px solid rgba(255,255,255,.1)}
+  .card-h,.card-b{padding-left:16px;padding-right:16px}
+  .drop{flex-direction:column;text-align:center;padding:22px 16px}
+  .chips{justify-content:center}
+  .file-row{grid-template-columns:40px minmax(0,1fr)}
   .file-row .right{grid-column:2;justify-content:space-between}
   .fname{white-space:normal;word-break:break-all}
-  .toolbar{width:100%;min-width:0}.seg{width:100%;min-width:0;overflow-x:auto}.seg button{white-space:nowrap;flex:1;justify-content:center}
+  .progress,.note{padding-left:0}
+  .problem{margin-left:0}
   .problem-h,.problem details{margin-left:0}
-  .cols{grid-template-columns:1fr;margin-left:0}.cols .k{padding-top:0}
+  .cols{grid-template-columns:1fr;margin-left:0}
+  .hist-head{display:none}
+  .hist-item{padding:14px 16px}
+  .hist-row{grid-template-columns:1fr 1fr;gap:10px}
+  .hist-row .file-cell{grid-column:1/-1}
+  .hist-row .num{text-align:left;grid-column:1/-1}
+  .toolbar,.seg{width:100%;min-width:0}.seg{overflow-x:auto}.seg button{flex:1;justify-content:center}
+  .toolbar .search{width:100%}
+  .summary{margin-left:0;width:100%}
 }
-@media (max-width:480px){.stats{grid-template-columns:1fr 1fr;gap:10px}.stat{padding:12px;gap:10px}.stat .ic{display:none}}
+@media (max-width:480px){.stats{gap:10px}.stat{padding:14px;gap:10px}.stat .ic{display:none}.stat .v{font-size:20px}.navbtn span{display:none}}
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="top-in">
-    <div class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg></div>
-    <div class="brand"><b>Dialog Data Upload</b><span>Credit scoring POC</span></div>
-    <div class="spacer"></div>
-    <div class="live" title="New files are sent to Snowflake automatically"><i class="dot"></i>Auto-load to Snowflake is on</div>
-    <div class="me"><div class="avatar" id="av">·</div><span id="who"></span></div>
+
+<section class="hero">
+  <div class="container">
+    <nav class="nav">
+      <div class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg></div>
+      <div class="brand"><b>Dialog Data Upload</b><span>Credit scoring POC</span></div>
+      <div class="spacer"></div>
+      <div class="live glass" title="New files are loaded into Snowflake automatically"><i class="dot"></i>Auto-load to Snowflake</div>
+      <button class="navbtn glass" id="open-known"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Accepted files</span></button>
+      <div class="me glass"><div class="avatar" id="av">·</div><span id="who"></span></div>
+    </nav>
+
+    <div class="hero-main">
+      <div>
+        <div class="eyebrow glass"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>No size limit · checked automatically</div>
+        <h1>Upload data files.<br><em>Straight into Snowflake.</em></h1>
+        <p>Drop the files below. Each file is checked, saved and loaded into the RAW tables within a few minutes.</p>
+      </div>
+      <div class="flow glass">
+        <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><div class="n">STEP 1</div><b>Check</b><span>Name and columns checked as you add the file</span></div>
+        <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg><div class="n">STEP 2</div><b>Upload</b><span>Sent in pieces. A dropped connection resends one piece</span></div>
+        <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg><div class="n">STEP 3</div><b>Save</b><span>Kept on the server. The same file isn't saved twice</span></div>
+        <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg><div class="n">STEP 4</div><b>Load</b><span>Rows added to the RAW table as they are</span></div>
+      </div>
+    </div>
   </div>
-</header>
+</section>
 
-<main class="wrap">
-  <section class="hero">
-    <h1>Upload data files</h1>
-    <p>Drop the files below. Each file is checked, saved, and loaded into Snowflake automatically within a few minutes. Any file size works.</p>
-  </section>
-
+<div class="container">
   <section class="stats">
     <div class="stat"><div class="ic a"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg></div><div><div class="v" id="s-files">–</div><div class="l">Files uploaded</div></div></div>
-    <div class="stat"><div class="ic g"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div class="v" id="s-loaded">–</div><div class="l">Loaded in Snowflake</div></div></div>
+    <div class="stat"><div class="ic g"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div class="v" id="s-loaded">–</div><div class="l">Loaded in Snowflake</div></div></div>
     <div class="stat"><div class="ic b"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div><div><div class="v" id="s-rows">–</div><div class="l">Rows added</div></div></div>
     <div class="stat"><div class="ic r"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/></svg></div><div><div class="v" id="s-bad">–</div><div class="l">Need attention</div></div></div>
   </section>
 
-  <section class="grid">
-    <div class="card">
-      <div class="card-h"><h2><span class="step-n">1</span>Choose and upload files</h2><span class="muted" style="font-size:12.5px" id="qcount"></span></div>
+  <main>
+    <section class="card" style="margin-top:4px">
+      <div class="card-h">
+        <div><h2>New upload</h2><p id="qcount">Add one or more files to start.</p></div>
+        <button class="linkbtn" id="open-known-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5v.01"/></svg>Which files are accepted? <span class="c" id="kcount">31</span></button>
+      </div>
       <div class="card-b">
         <label class="drop" id="drop">
-          <div class="big"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg></div>
-          <b>Drag files here or <u>browse</u></b>
-          <span>You can choose many files at once. There is no size limit.</span>
+          <div class="big"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></div>
+          <div class="txt"><b>Drag files here, or click to browse</b><span>You can add many files at once. There is no size limit.</span></div>
           <div class="chips"><span class="chip">.csv</span><span class="chip">.csv.gz</span><span class="chip">.csv_part1.gz</span></div>
           <input type="file" id="picker" multiple accept=".csv,.gz">
         </label>
-
         <div class="files" id="queue"></div>
-
-        <div class="actions">
+        <div class="actions" id="actions" hidden>
           <button class="btn btn-primary" id="go" disabled>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
             <span id="go-t">Upload</span></button>
@@ -245,48 +315,37 @@ input[type=file]{display:none}
           <span class="summary" id="qsum"></span>
         </div>
       </div>
-    </div>
+    </section>
 
-    <aside style="display:flex;flex-direction:column;gap:18px">
-      <div class="card">
-        <div class="card-h"><h2>How it works</h2></div>
-        <div class="card-b">
-          <ol class="how">
-            <li><span class="n">1</span><div><b>Choose files</b><span>The name and columns are checked straight away.</span></div></li>
-            <li><span class="n">2</span><div><b>Upload</b><span>Sent in small pieces. A dropped connection only resends one piece.</span></div></li>
-            <li><span class="n">3</span><div><b>Saved on the server</b><span>The same file uploaded twice is not saved again.</span></div></li>
-            <li><span class="n">4</span><div><b>Loaded into Snowflake</b><span>Within a few minutes. Rows are added as they are.</span></div></li>
-          </ol>
+    <section class="card">
+      <div class="card-h">
+        <div><h2>Upload history</h2><p>Updates on its own every 20 seconds</p></div>
+        <div class="toolbar">
+          <div class="seg" id="seg">
+            <button data-f="all" class="on">All <span class="c" id="c-all">0</span></button>
+            <button data-f="loaded">Loaded <span class="c" id="c-loaded">0</span></button>
+            <button data-f="progress">In progress <span class="c" id="c-progress">0</span></button>
+            <button data-f="failed">Failed <span class="c" id="c-failed">0</span></button>
+          </div>
+          <div class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="hsearch" placeholder="Search files or tables"></div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-h"><h2>Accepted files</h2><span class="muted" style="font-size:12.5px" id="kcount"></span></div>
-        <div class="card-b">
-          <div class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ksearch" placeholder="Search file name or table"></div>
-          <div class="known" id="known"></div>
-        </div>
-      </div>
-    </aside>
-  </section>
+      <div class="hist-head"><div>File</div><div>Upload</div><div>Snowflake</div><div style="text-align:right">Rows added</div></div>
+      <div id="hist"></div>
+      <div class="more" id="more" hidden><button class="btn btn-ghost" id="morebtn">Show more</button></div>
+    </section>
+  </main>
+</div>
 
-  <section class="card" style="margin-top:18px">
-    <div class="card-h">
-      <h2><span class="step-n">2</span>Upload history</h2>
-      <div class="toolbar">
-        <div class="seg" id="seg">
-          <button data-f="all" class="on">All <span class="c" id="c-all">0</span></button>
-          <button data-f="loaded">Loaded <span class="c" id="c-loaded">0</span></button>
-          <button data-f="progress">In progress <span class="c" id="c-progress">0</span></button>
-          <button data-f="failed">Failed <span class="c" id="c-failed">0</span></button>
-        </div>
-        <div class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="hsearch" placeholder="Search files"></div>
-      </div>
-    </div>
-    <div class="hist-head"><div>File</div><div>Upload</div><div>Snowflake</div><div style="text-align:right">Rows added</div></div>
-    <div id="hist"></div>
-    <div class="more" id="more" hidden><button class="btn btn-ghost" id="morebtn">Show more</button></div>
-  </section>
-</main>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Accepted files">
+  <div class="drawer-h">
+    <div class="row"><div><h3>Accepted files</h3><p id="kcount2">31 file types, grouped by phase</p></div>
+      <button class="iconbtn" id="close-known" title="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ksearch" placeholder="Search file name or table"></div>
+  </div>
+  <div class="drawer-b" id="known"></div>
+</aside>
 <div class="toasts" id="toasts"></div>
 
 <script>
@@ -302,9 +361,10 @@ const ICON = {
   file: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>',
   ok: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
   bad: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/></svg>',
+  up: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>',
   x: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
-  info: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5v.01"/></svg>',
-  empty: '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/></svg>'
+  info: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5v.01"/></svg>',
+  empty: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/></svg>'
 };
 
 function toast(text, icon = ICON.ok) {
@@ -312,7 +372,7 @@ function toast(text, icon = ICON.ok) {
   $("#toasts").appendChild(t); setTimeout(() => t.remove(), 5000);
 }
 
-/* ---------- turn long technical messages into a short title + hint + details ---------- */
+/* ---------- long technical messages -> short title + hint (+ details) ---------- */
 function explain(msg) {
   msg = String(msg || "");
   const h = msg.match(/Header does not match\.\s*Expected:\s*(.*?)\s*\|\s*Found:\s*(.*)$/s);
@@ -320,13 +380,13 @@ function explain(msg) {
     const want = h[1].split(",").map(s => s.trim()).filter(Boolean);
     const got = /\(empty/.test(h[2]) ? [] : h[2].split(",").map(s => s.trim()).filter(Boolean);
     const missing = want.filter(c => !got.includes(c)), extra = got.filter(c => !want.includes(c));
-    let hint = !got.length ? "The first line of the file is empty." :
-      missing.length || extra.length ? `${missing.length} column(s) missing, ${extra.length} unexpected.` :
+    const hint = !got.length ? "The first line of the file is empty." :
+      missing.length || extra.length ? `${missing.length} column${missing.length !== 1 ? "s" : ""} missing, ${extra.length} unexpected.` :
       "Same columns, but in a different order.";
-    return {title: "Columns don't match the expected layout", hint, want, got, raw: msg};
+    return {title: "Columns don't match the expected layout", hint, want, got, raw: ""};
   }
   const rules = [
-    [/not recognised/i, "Unknown file name", "The name must start with one of the accepted names (see the list on the right).", 1],
+    [/not recognised/i, "Unknown file name", "The name must start with one of the accepted names (see Accepted files).", 1],
     [/letters, digits|no spaces/i, "File name has spaces or special characters", "Rename it using letters, digits, _ . - only, then add it again.", 1],
     [/Only \.csv/i, "File type not supported", "Use .csv, .csv.gz or .csv_partN.gz.", 1],
     [/file is empty/i, "The file is empty", "Check the file and export it again.", 1],
@@ -343,20 +403,17 @@ function explain(msg) {
   const first = msg.split(/(?<=\.)\s|\n/)[0];
   return {title: first.length > 90 ? first.slice(0, 88) + "…" : first || "Something went wrong", hint: "", raw: msg};
 }
-
+function colsHtml(want, got) {
+  const gotSet = new Set(got), wantSet = new Set(want);
+  return `<div class="cols"><div class="k">Expected</div><div class="v">${want.map(c => `<span class="cc ${gotSet.has(c) ? "" : "miss"}">${esc(c)}</span>`).join("")}</div>
+    <div class="k">In file</div><div class="v">${got.length ? got.map(c => `<span class="cc ${wantSet.has(c) ? "" : "extra"}">${esc(c)}</span>`).join("") : '<span class="muted" style="font-size:12px">(empty)</span>'}</div></div>`;
+}
 function problemBox(msg, kind = "") {
   if (!msg) return "";
   const e = explain(msg);
-  let cols = "";
-  if (e.want) {
-    const gotSet = new Set(e.got), wantSet = new Set(e.want);
-    cols = `<div class="cols"><div class="k">Expected</div><div class="v">${e.want.map(c => `<span class="cc ${gotSet.has(c) ? "" : "miss"}">${esc(c)}</span>`).join("")}</div>
-      <div class="k">In file</div><div class="v">${e.got.length ? e.got.map(c => `<span class="cc ${wantSet.has(c) ? "" : "extra"}">${esc(c)}</span>`).join("") : '<span class="muted" style="font-size:12px">(empty)</span>'}</div></div>`;
-  }
-  const showRaw = e.raw && e.raw !== e.title && !e.want;
   return `<div class="problem ${kind}"><div class="problem-t">${ICON.bad}<span>${esc(e.title)}</span></div>
-    ${e.hint ? `<div class="problem-h">${esc(e.hint)}</div>` : ""}${cols}
-    ${showRaw ? `<details><summary>Technical details</summary><div class="raw">${esc(e.raw)}</div></details>` : ""}</div>`;
+    ${e.hint ? `<div class="problem-h">${esc(e.hint)}</div>` : ""}${e.want ? colsHtml(e.want, e.got) : ""}
+    ${e.raw && e.raw !== e.title ? `<details><summary>Technical details</summary><div class="raw">${esc(e.raw)}</div></details>` : ""}</div>`;
 }
 
 /* ---------- checks in the browser ---------- */
@@ -398,9 +455,9 @@ async function addFiles(list) {
     else {
       const line = await firstLine(f);
       const got = cols(line), want = item.map.header;
-      if (line === null) { item.state = "ready"; item.msg = ""; item.note = "Columns will be checked on the server."; }
+      if (line === null) { item.state = "ready"; item.note = "Columns will be checked on the server."; }
       else if (got.join(",") !== want.join(",")) { item.state = "bad"; item.msg = "Header does not match. Expected: " + want.join(",") + " | Found: " + (got.join(",") || "(empty)"); }
-      else { item.state = "ready"; item.note = ""; }
+      else { item.state = "ready"; item.note = "Name and columns look right."; }
     }
     render();
   }
@@ -409,35 +466,34 @@ async function addFiles(list) {
 /* ---------- queue ---------- */
 const QSTATE = {
   checking: ["p-info p-run", "Checking"], ready: ["p-ok", "Ready"], bad: ["p-bad", "Can't upload"],
-  uploading: ["p-info p-run", "Uploading"], checking_server: ["p-info p-run", "Verifying"],
+  uploading: ["p-acc p-run", "Uploading"], checking_server: ["p-acc p-run", "Verifying"],
   SAVED: ["p-ok", "Saved"], DUPLICATE: ["p-warn", "Already uploaded"], REJECTED: ["p-bad", "Rejected"], error: ["p-bad", "Failed"]
 };
 function render() {
-  const box = $("#queue");
-  if (!queue.length) { box.innerHTML = ""; }
-  else box.innerHTML = queue.map((i, n) => {
+  $("#queue").innerHTML = queue.map((i, n) => {
     const [cls, label] = QSTATE[i.state] || ["p-mute", i.state];
     const running = ["uploading", "checking_server"].includes(i.state);
-    const iconCls = i.state === "SAVED" ? 'style="background:var(--ok-soft);color:var(--ok);border-color:transparent"' : "";
+    const ic = i.state === "SAVED" ? ["ok", ICON.ok] : ["bad", "REJECTED", "error"].includes(i.state) ? ["bad", ICON.bad] : running ? ["run", ICON.up] : ["", ICON.file];
     return `<div class="file"><div class="file-row">
-        <div class="ficon" ${iconCls}>${i.state === "SAVED" ? ICON.ok : ICON.file}</div>
+        <div class="ficon ${ic[0]}">${ic[1]}</div>
         <div style="min-width:0"><div class="fname" title="${esc(i.file.name)}">${esc(i.file.name)}</div>
-          <div class="fmeta"><span>${fmtSize(i.file.size)}</span>${i.map ? `<span class="sep">•</span><span>${esc(i.map.label)}</span><span class="sep">→</span><span class="mono">${esc(i.map.target_table)}</span>` : ""}</div></div>
+          <div class="fmeta"><span>${fmtSize(i.file.size)}</span>${i.map ? `<span class="sep">•</span><span>${esc(i.map.label)}</span><span class="sep">→</span><span class="tbl">${esc(i.map.target_table)}</span>` : ""}</div></div>
         <div class="right"><span class="pill ${cls}">${label}</span>
-          ${!busy && ["ready", "bad", "checking", "error", "REJECTED"].includes(i.state) ? `<button class="iconbtn" data-rm="${n}" title="Remove">${ICON.x}</button>` : ""}</div></div>
+          ${!busy && ["ready", "bad", "checking", "error", "REJECTED", "SAVED", "DUPLICATE"].includes(i.state) ? `<button class="iconbtn" data-rm="${n}" title="Remove from list">${ICON.x}</button>` : ""}</div></div>
       ${running ? `<div class="progress"><div class="track"><i style="width:${i.pct}%"></i></div><small>${i.state === "checking_server" ? "Verifying file…" : i.pct.toFixed(0) + "%" + (i.speed ? " · " + i.speed : "")}</small></div>` : ""}
       ${["bad", "REJECTED", "error"].includes(i.state) ? problemBox(i.msg) : ""}
       ${i.state === "DUPLICATE" ? problemBox(i.msg, "warn") : ""}
-      ${i.state === "SAVED" ? `<div class="note">${ICON.info}<span>Saved. It will appear as <b>Loaded</b> in the history below within a few minutes.</span></div>` : ""}
+      ${i.state === "SAVED" ? `<div class="note">${ICON.info}<span>Saved. It shows as <b>Loaded</b> in the history within a few minutes.</span></div>` : ""}
       ${i.state === "ready" && i.note ? `<div class="note">${ICON.info}<span>${esc(i.note)}</span></div>` : ""}
     </div>`;
   }).join("");
   const ready = queue.filter(i => i.state === "ready");
+  $("#actions").hidden = !queue.length;
   $("#go").disabled = busy || !ready.length;
   $("#go-t").textContent = busy ? "Uploading…" : ready.length ? `Upload ${ready.length} file${ready.length > 1 ? "s" : ""} · ${fmtSize(ready.reduce((a, i) => a + i.file.size, 0))}` : "Upload";
   $("#clear").disabled = busy || !queue.length;
   const bad = queue.filter(i => i.state === "bad").length;
-  $("#qcount").textContent = queue.length ? `${queue.length} file${queue.length > 1 ? "s" : ""}${bad ? ` · ${bad} can't upload` : ""}` : "";
+  $("#qcount").textContent = queue.length ? `${queue.length} file${queue.length > 1 ? "s" : ""} added${bad ? ` · ${bad} can't be uploaded` : ""}` : "Add one or more files to start.";
   const total = queue.filter(i => i.state !== "bad").length, done = queue.filter(i => ["SAVED", "DUPLICATE", "REJECTED", "error"].includes(i.state)).length;
   $("#qsum").textContent = busy ? `${done} of ${total} done · keep this page open` : "";
 }
@@ -487,7 +543,12 @@ async function uploadAll() {
   }
   busy = false; render(); loadHistory();
   const saved = todo.filter(i => i.state === "SAVED").length, failed = todo.filter(i => ["error", "REJECTED"].includes(i.state)).length;
-  toast(failed ? `${saved} saved, ${failed} failed` : `${saved} file${saved !== 1 ? "s" : ""} saved · loading into Snowflake`, failed ? ICON.bad : ICON.ok);
+  const dup = todo.filter(i => i.state === "DUPLICATE").length;
+  const parts = [];
+  if (saved) parts.push(`${saved} file${saved !== 1 ? "s" : ""} saved · loading into Snowflake`);
+  if (dup) parts.push(`${dup} already uploaded before`);
+  if (failed) parts.push(`${failed} failed`);
+  toast(parts.join(" · ") || "Nothing uploaded", failed ? ICON.bad : saved ? ICON.ok : ICON.info);
 }
 
 /* ---------- history ---------- */
@@ -496,7 +557,7 @@ const SF = {LOADED: ["p-ok", "Loaded"], NO_NEW_ROWS: ["p-warn", "No new rows"], 
 const UP = {SAVED: ["p-ok", "Saved"], DUPLICATE: ["p-warn", "Duplicate"], REJECTED: ["p-bad", "Rejected"]};
 function group(r) {
   if (r.status === "REJECTED" || ["FAILED", "GAVE_UP"].includes(r.sf_status)) return "failed";
-  if (r.sf_status === "LOADED" || r.sf_status === "SKIPPED_DUPLICATE" || r.sf_status === "NO_NEW_ROWS") return "loaded";
+  if (["LOADED", "SKIPPED_DUPLICATE", "NO_NEW_ROWS"].includes(r.sf_status)) return "loaded";
   if (r.status === "SAVED") return "progress";
   return "other";
 }
@@ -511,22 +572,21 @@ function renderHistory() {
   for (const k in counts) $("#c-" + k).textContent = counts[k];
   const rows = HIST.filter(r => (filter === "all" || group(r) === filter) &&
     (!q || (r.file_name + " " + r.target_table + " " + r.user).toUpperCase().includes(q)));
-  const box = $("#hist");
   if (!rows.length) {
-    box.innerHTML = `<div class="empty">${ICON.empty}<div>${HIST.length ? "No files match this filter." : "No uploads yet. Files you upload will appear here."}</div></div>`;
+    $("#hist").innerHTML = `<div class="empty"><div class="eic">${ICON.empty}</div><div>${HIST.length ? "No files match this filter." : "No uploads yet. Files you upload will appear here."}</div></div>`;
     $("#more").hidden = true; return;
   }
-  box.innerHTML = rows.slice(0, shown).map(r => {
+  $("#hist").innerHTML = rows.slice(0, shown).map(r => {
     const up = UP[r.status] || ["p-mute", r.status];
     const sf = r.sf_status ? (SF[r.sf_status] || ["p-mute", r.sf_status]) : null;
     const g = group(r);
-    const iconStyle = g === "loaded" ? "background:var(--ok-soft);color:var(--ok);border-color:transparent" : g === "failed" ? "background:var(--bad-soft);color:var(--bad);border-color:transparent" : "";
+    const ic = g === "loaded" ? ["ok", ICON.ok] : g === "failed" ? ["bad", ICON.bad] : g === "progress" ? ["run", ICON.up] : ["", ICON.file];
     const msg = r.status === "REJECTED" ? r.message : ["FAILED", "GAVE_UP", "RETRY"].includes(r.sf_status) ? r.sf_message : r.status === "DUPLICATE" ? r.message : "";
-    const kind = ["RETRY"].includes(r.sf_status) || r.status === "DUPLICATE" ? "warn" : "";
+    const kind = r.sf_status === "RETRY" || r.status === "DUPLICATE" ? "warn" : "";
     return `<div class="hist-item"><div class="hist-row">
-      <div class="file-cell"><div class="ficon" style="${iconStyle}">${g === "loaded" ? ICON.ok : g === "failed" ? ICON.bad : ICON.file}</div>
+      <div class="file-cell"><div class="ficon ${ic[0]}">${ic[1]}</div>
         <div style="min-width:0"><div class="fname" title="${esc(r.file_name)}">${esc(r.file_name)}</div>
-        <div class="fmeta"><span class="mono">${esc(r.target_table)}</span><span class="sep">•</span><span>${fmtSize(+r.size_bytes || 0)}</span><span class="sep">•</span><span>${when(r.uploaded_at)}</span><span class="sep">•</span><span>${esc(r.user)}</span></div></div></div>
+        <div class="fmeta"><span class="tbl">${esc(r.target_table)}</span><span>${fmtSize(+r.size_bytes || 0)}</span><span class="sep">•</span><span>${when(r.uploaded_at)}</span><span class="sep">•</span><span>${esc(r.user)}</span></div></div></div>
       <div class="stage-col"><span class="pill ${up[0]}">${up[1]}</span></div>
       <div class="stage-col">${sf ? `<span class="pill ${sf[0]}">${sf[1]}</span>${r.sf_at && r.sf_status === "LOADED" ? `<small>${when(r.sf_at)}</small>` : ""}` : '<span class="muted">—</span>'}</div>
       <div class="num">${r.sf_status === "LOADED" && r.sf_rows !== "" ? fmtN(r.sf_rows) + "<small>rows</small>" : '<span class="muted" style="font-weight:400">—</span>'}</div>
@@ -535,8 +595,7 @@ function renderHistory() {
   $("#more").hidden = rows.length <= shown;
 }
 function renderStats() {
-  const saved = HIST.filter(r => r.status === "SAVED");
-  $("#s-files").textContent = fmtN(saved.length);
+  $("#s-files").textContent = fmtN(HIST.filter(r => r.status === "SAVED").length);
   $("#s-loaded").textContent = fmtN(HIST.filter(r => r.sf_status === "LOADED").length);
   const rows = HIST.filter(r => r.sf_status === "LOADED").reduce((a, r) => a + (+r.sf_rows || 0), 0);
   $("#s-rows").textContent = rows >= 1e6 ? (rows / 1e6).toFixed(rows >= 1e7 ? 0 : 1) + "M" : fmtN(rows);
@@ -548,22 +607,28 @@ async function loadHistory() {
   renderStats(); renderHistory();
 }
 
-/* ---------- accepted files ---------- */
+/* ---------- accepted files drawer ---------- */
 function renderKnown() {
   const q = $("#ksearch").value.trim().toUpperCase();
   const list = CFG.file_map.filter(m => !q || (m.file_prefix + " " + m.target_table + " " + m.label).toUpperCase().includes(q));
   const phases = [...new Set(list.map(m => m.phase))].sort();
   $("#known").innerHTML = list.length ? phases.map(p => {
     const items = list.filter(m => m.phase === p);
-    return `<div><div class="phase-h"><span>Phase ${esc(p)}</span><span>${items.length}</span></div>${items.map(m =>
-      `<div class="kf"><span class="mono">${esc(m.file_prefix)}…</span><small>${esc(m.label)} → <b>${esc(m.target_table)}</b></small></div>`).join("")}</div>`;
-  }).join("") : '<div class="muted" style="font-size:13px">No match.</div>';
+    return `<div class="phase-h"><span>Phase ${esc(p)}</span><span>${items.length} files</span></div>${items.map(m =>
+      `<div class="kf"><span class="mono">${esc(m.file_prefix)}…</span><small>${esc(m.label)} → <b>${esc(m.target_table)}</b></small>
+        <details><summary>Show columns</summary><div class="cols"><div class="v">${m.header.map(c => `<span class="cc">${esc(c)}</span>`).join("")}</div></div></details></div>`).join("")}`;
+  }).join("") : '<div class="muted" style="font-size:13px;padding:10px 0">No match.</div>';
+}
+function drawer(open) {
+  $("#drawer").classList.toggle("open", open); $("#scrim").classList.toggle("open", open);
+  if (open) setTimeout(() => $("#ksearch").focus(), 200);
 }
 
 async function init() {
   CFG = await api("/api/config");
   $("#who").textContent = CFG.user; $("#av").textContent = (CFG.user || "?").slice(0, 2);
-  $("#kcount").textContent = CFG.file_map.length + " types";
+  $("#kcount").textContent = CFG.file_map.length;
+  $("#kcount2").textContent = CFG.file_map.length + " file types, grouped by phase";
   renderKnown(); render(); loadHistory();
 }
 
@@ -580,6 +645,10 @@ $("#seg").addEventListener("click", e => { const b = e.target.closest("button");
 $("#hsearch").addEventListener("input", () => { shown = 25; renderHistory(); });
 $("#ksearch").addEventListener("input", renderKnown);
 $("#morebtn").addEventListener("click", () => { shown += 25; renderHistory(); });
+["#open-known", "#open-known-2"].forEach(s => $(s).addEventListener("click", () => drawer(true)));
+$("#close-known").addEventListener("click", () => drawer(false));
+$("#scrim").addEventListener("click", () => drawer(false));
+document.addEventListener("keydown", e => { if (e.key === "Escape") drawer(false); });
 window.addEventListener("beforeunload", e => { if (busy) { e.preventDefault(); e.returnValue = ""; } });
 init();
 setInterval(() => { if (!busy) loadHistory(); }, 20000);
