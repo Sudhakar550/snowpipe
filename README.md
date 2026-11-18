@@ -1,7 +1,8 @@
 # Dialog data upload → Snowflake RAW
 
 Dialog uploads data files on a web page. Each file is checked, saved on an AWS server, and
-loaded **as is** into the matching `CREDIT_RISK.RAW` table in Snowflake within a few minutes.
+loaded into the matching `CREDIT_RISK.RAW` table in Snowflake within a few minutes.
+Rows already in the table are skipped (duplicate check, see section 9).
 Any file size works.
 
 | | |
@@ -43,7 +44,7 @@ Browser ──HTTPS──> Caddy ──> upload page (app.py) ──> /data/dial
                        PUT  ──> Snowflake stage @CREDIT_RISK.RAW.STG_DIALOG/incoming/<batch>/
                        CALL CREDIT_RISK.RAW.LOAD_NEW_FILES()
                               ├─ FILE_MAP: which file goes to which table, expected columns
-                              ├─ checks the header, COPY all rows as is (+ _SOURCE_FILE)
+                              ├─ checks the header, adds rows not already in the table (+ _SOURCE_FILE)
                               └─ writes the result to RAW.UPLOAD_LOG
                        writes the result to pipeline_log.csv ──> shown on the page
 ```
@@ -54,7 +55,7 @@ Browser ──HTTPS──> Caddy ──> upload page (app.py) ──> /data/dial
 | 2. Upload | Browser → `app.py` | Sent in 8 MB pieces, 3 at a time; a dropped connection resends one piece |
 | 3. Save | `app.py` | Checks size, header and fingerprint (SHA-256). Saves to `incoming/<batch>/`, writes `upload_log.csv` |
 | 4. Push | `pusher.py` | Every 60 s: compresses and `PUT`s new files to the Snowflake stage |
-| 5. Load | `LOAD_NEW_FILES()` | Header check, `COPY` all rows as is into the RAW table, result in `RAW.UPLOAD_LOG` |
+| 5. Load | `LOAD_NEW_FILES()` | Header check, adds rows not already in the RAW table, result in `RAW.UPLOAD_LOG` |
 | 6. Show | `pusher.py` → page | Result in `pipeline_log.csv`; the page refreshes every 20 s |
 
 The page reads only from the server (`file_map.json`, `upload_log.csv`, `pipeline_log.csv`),
@@ -295,49 +296,56 @@ sudo journalctl -u dialog-pipeline -f
 
 ## 9. Duplicates and re-sent files
 
-**Current setting: rows are loaded as is.** Nothing is skipped, replaced or removed automatically.
+Two checks stop the same data from being loaded twice.
+
+**1. Same file (upload page).** A file with exactly the same contents as an earlier upload,
+even under another name, is not saved: **Already uploaded**.
+
+**2. Same rows (Snowflake loader, ON).** Each row of a new file is compared with the rows
+already in its RAW table (all columns except `_SOURCE_FILE` / `_LOADED_AT`). Rows already there
+are not inserted. The comparison is copy by copy, because identical rows can be real (for
+example 13 payments of Rs 500 on one day): if the table holds 13 copies and the file 14, one is added.
 
 | Upload | Result |
 |---|---|
-| Exact same file again (even renamed) | Blocked by the upload page: **Already uploaded**, not loaded |
-| Same name, different contents | Saved and loaded: all its rows are **added on top** |
-| A file that repeats rows already in the table | Those rows are added again (doubled) |
-| A corrected full copy of an earlier file | Remove the old upload first with `REMOVE_UPLOAD`, then upload the new one |
+| A file sent again (same rows) | Nothing added: **No new rows** |
+| Old months plus a new month | Only the new rows added; page shows "N duplicates skipped" |
+| 13 identical payments in a new file | All 13 kept the first time; none added if sent again |
+| A corrected row (one value changed) | Added as a new row; the old one stays. Use `REMOVE_UPLOAD` on the old upload to replace it |
 
-Each upload stays separate (own folder on the server and in the stage, `_SOURCE_FILE` in the
-table), so any single upload can be removed:
+### The setting
+
+At the top of `18_pipeline_setup_all.sql`:
 
 ```sql
-SELECT RELATIVE_PATH, FILE_NAME, ROWS_LOADED, PROCESSED_AT
-FROM CREDIT_RISK.RAW.UPLOAD_LOG WHERE FILE_NAME ILIKE 'DF_CP_BILLS_PAYMENTS_GSM%' ORDER BY PROCESSED_AT;
+SET DUPLICATE_RULE_FOR_ALL = 'NEW_ROWS_ONLY';
+```
+
+| Value | Behaviour |
+|---|---|
+| `NEW_ROWS_ONLY` (current) | Skip rows already in the table, keep real repeats |
+| `ONE_COPY` | Same, and a row repeated inside a file is kept only once |
+| `KEEP_ALL` | No check: every row loaded as is |
+
+Run all applies it to all 31 tables. To change it without running the file:
+
+```sql
+UPDATE CREDIT_RISK.RAW.FILE_MAP SET DUPLICATE_RULE = 'KEEP_ALL';                                     -- all tables
+UPDATE CREDIT_RISK.RAW.FILE_MAP SET DUPLICATE_RULE = 'ONE_COPY' WHERE TARGET_TABLE = 'GSM_APP_USAGE';   -- one table
+
+SELECT TARGET_TABLE, DUPLICATE_RULE FROM CREDIT_RISK.RAW.FILE_MAP ORDER BY 1;                         -- see it
+SELECT CONTAINS(GET_DDL('PROCEDURE', 'CREDIT_RISK.RAW.LOAD_NEW_FILES()'), 'load_new_rows') AS NEW_LOADER;   -- TRUE = current loader
+```
+
+A change applies from the next upload. Rows loaded earlier are not changed. Each upload stays
+separate (`_SOURCE_FILE`), so any single upload can be removed:
+
+```sql
+SELECT RELATIVE_PATH, FILE_NAME, ROWS_IN_FILE, ROWS_LOADED, ROWS_SKIPPED, PROCESSED_AT
+FROM CREDIT_RISK.RAW.UPLOAD_LOG ORDER BY PROCESSED_AT DESC LIMIT 20;
 
 CALL CREDIT_RISK.RAW.REMOVE_UPLOAD('<RELATIVE_PATH>');
 ```
-
-### Duplicate skipping (built in, switched off)
-
-The loader can skip rows that are already in the table. It is **off** for all 31 tables
-(`RAW.FILE_MAP.DUPLICATE_RULE = 'KEEP_ALL'`) until decided.
-
-| Rule | Behaviour |
-|---|---|
-| `KEEP_ALL` (current) | Every row added as is |
-| `NEW_ROWS_ONLY` | A row is added only if the table does not already hold it (all columns compared, copy by copy, so real repeats such as 13 equal payments are kept the first time) |
-| `ONE_COPY` | Same, and a row repeated inside a file is kept only once |
-
-```sql
--- turn on for all tables, or for one
-UPDATE CREDIT_RISK.RAW.FILE_MAP SET DUPLICATE_RULE = 'NEW_ROWS_ONLY';
-UPDATE CREDIT_RISK.RAW.FILE_MAP SET DUPLICATE_RULE = 'NEW_ROWS_ONLY' WHERE TARGET_TABLE = 'BILLS_PAYMENTS_GSM';
-
--- turn off again
-UPDATE CREDIT_RISK.RAW.FILE_MAP SET DUPLICATE_RULE = 'KEEP_ALL';
-
--- current rule per table
-SELECT TARGET_TABLE, DUPLICATE_RULE FROM CREDIT_RISK.RAW.FILE_MAP ORDER BY 1;
-```
-
-Running `18_pipeline_setup_all.sql` again resets every table to `KEEP_ALL`.
 
 ---
 

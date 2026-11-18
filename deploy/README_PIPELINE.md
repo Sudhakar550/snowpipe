@@ -1,7 +1,8 @@
 # Step 2: connect the server to Snowflake
 
 Result: every file saved by the upload page is pushed to Snowflake and loaded into its
-`CREDIT_RISK.RAW` table, every row as is, within about a minute. The page shows the result.
+`CREDIT_RISK.RAW` table within about a minute. Rows already in the table are skipped.
+The page shows the result.
 Do `README_EC2.md` first. The full runbook (all commands) is in `../README.md`.
 
 ```
@@ -30,7 +31,7 @@ It creates, in `CREDIT_RISK.RAW`:
 | `FILE_MAP` | 31 file types: name prefix → table, expected header |
 | `UPLOAD_LOG` | One row per file processed |
 | 8 Phase 3 tables | Bills/payments, digital payments, GSM revenue, broadband usage |
-| `LOAD_NEW_FILES()` | Loads new files from `incoming/`, rows as is (duplicate skipping built in, off) |
+| `LOAD_NEW_FILES()` | Loads new files from `incoming/`; skips rows already in the table |
 | `REMOVE_UPLOAD(path)` | Takes one upload back out |
 
 Check:
@@ -72,7 +73,8 @@ Running it again is safe: the key and settings are kept.
 |---|---|
 | Waiting | Saved on the server, not pushed yet |
 | Retrying | A try failed; tried again next round (up to 5 times) |
-| Loaded | Rows added to the RAW table; row count shown |
+| Loaded | New rows added to the RAW table; count shown, with duplicates skipped |
+| No new rows | Every row was already in the table; nothing added |
 | Failed | Header wrong, or a Snowflake error. Reason shown under the file |
 
 ## Retry failed files
@@ -92,12 +94,13 @@ sudo systemctl start dialog-pipeline
 
 ## Duplicates
 
-- Rows are loaded **as is** (current setting).
 - Exact same file again: blocked by the page (**Already uploaded**).
-- Same name, new contents: loaded, rows **added on top**.
-- Corrected full copy: first `CALL CREDIT_RISK.RAW.REMOVE_UPLOAD('<RELATIVE_PATH from UPLOAD_LOG>');`, then upload.
-- Duplicate skipping is built in but off (`RAW.FILE_MAP.DUPLICATE_RULE = 'KEEP_ALL'`).
-  To turn it on: `UPDATE CREDIT_RISK.RAW.FILE_MAP SET DUPLICATE_RULE = 'NEW_ROWS_ONLY';` (see `../README.md`, section 9).
+- Rows already in the table: not inserted (duplicate check ON). A re-sent file adds nothing
+  (**No new rows**); an overlapping file adds only its new rows. Real repeats inside a file are kept.
+- The rule is set at the top of file 18: `SET DUPLICATE_RULE_FOR_ALL = 'NEW_ROWS_ONLY';`
+  (`KEEP_ALL` = load as is, `ONE_COPY` = also one copy per file). Details: `../README.md`, section 9.
+- Corrected file (changed values): changed rows are added as new. To replace the old upload,
+  first `CALL CREDIT_RISK.RAW.REMOVE_UPLOAD('<RELATIVE_PATH from UPLOAD_LOG>');`, then upload.
 
 ## Commands
 

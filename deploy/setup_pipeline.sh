@@ -9,7 +9,7 @@
 #   2. print the public key and the SQL to paste in Snowsight (creates the user DIALOG_PIPELINE)
 #   3. save the Snowflake settings in /etc/dialog-pipeline.env
 #   4. test the login, then start the service "dialog-pipeline", which pushes every
-#      uploaded file to Snowflake and loads it into RAW (rows added as is)
+#      uploaded file to Snowflake and loads it into RAW (rows already there skipped)
 #
 # Safe to run again: the key and settings are kept.
 # =============================================================================

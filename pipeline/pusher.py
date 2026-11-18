@@ -7,7 +7,7 @@ Every PIPELINE_INTERVAL seconds it:
      status SAVED that are not finished in <DATA_DIR>/pipeline_log.csv
   2. PUTs each one to @CREDIT_RISK.RAW.STG_DIALOG/incoming/<batch>/ (same folder name as on
      the server, compressed on the way, any size)
-  3. CALLs CREDIT_RISK.RAW.LOAD_NEW_FILES()  (file 18: header check, rows added as is)
+  3. CALLs CREDIT_RISK.RAW.LOAD_NEW_FILES()  (file 18: header check, rows already in the table skipped)
   4. writes the result per file to <DATA_DIR>/pipeline_log.csv, which the upload page shows
 
 Usage:
